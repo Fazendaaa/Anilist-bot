@@ -1,0 +1,52 @@
+{
+  "name": "anilist-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot that searches data in Anilist",
+  "main": "./src/build/bot.js",
+  "babel": {
+    "presets": [
+      "es2015-node5"
+    ],
+    "env": {
+      "production": {
+        "plugins": [
+          "transform-inline-environment-variables"
+        ]
+      }
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel -D ./src/ -d build",
+    "es6": "babel-node src/bot.js",
+    "bot": "node build/bot.js",
+    "db": "mongod --dbpath anilist_db"
+  },
+  "repository": "git+https://github.com/Fazendaaa/Anilist-bot.git",
+  "author": "Farm <lucas.carotta@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Fazendaaa/Anilist-bot/issues"
+  },
+  "homepage": "https://github.com/Fazendaaa/Anilist-bot#readme",
+  "dependencies": {
+    "babel-cli": "6.24.1",
+    "babel-core": "6.24.1",
+    "babel-loader": "7.0.0",
+    "babel-plugin-transform-inline-environment-variables": "0.0.2",
+    "babel-polyfill": "6.23.0",
+    "babel-preset-env": "1.4.0",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-es2015-node5": "1.2.0",
+    "dotenv": "4.0.0",
+    "moment": "2.18.1",
+    "mongodb": "2.2.26",
+    "mongoose": "4.10.0",
+    "nani": "1.2.0",
+    "polyfill": "0.1.0",
+    "telegraf": "3.6.10"
+  },
+  "devDependencies": {
+    "json-loader": "0.5.4"
+  }
+}

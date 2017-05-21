@@ -1,0 +1,7 @@
+help - More info about how to use it
+anime - Search animes
+character - Search characters
+staff - Search staff
+studio - Search studios
+watchlist - See your saved animes
+rm - Remove anime from your watchlist
