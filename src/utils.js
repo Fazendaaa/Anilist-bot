@@ -29,7 +29,7 @@ or\n\
 */rm* _index1, index2, index3, ..._\n';
 const defaultResponse = 'Please, feel free to search Anilist.';
 const messageSearch = 'Search for animes, character, staff and studios.';
-const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/src/images/logo_al.png';
+const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/logo_al.png';
 const search = {
                     id: '1',
                     title: 'Search for anything',
@@ -39,7 +39,7 @@ const search = {
                         parse_mode: 'Markdown'
                     },
                     description: messageSearch,
-                    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/src/images/search.jpg'
+                    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/search.jpg'
                 }
 const notFound = {
                     id: '0',
@@ -50,7 +50,7 @@ const notFound = {
                         parse_mode: 'HTML'
                     },
                     description: 'Content not found',
-                    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/src/images/error.jpg'
+                    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/error.jpg'
                 }
 
 /***********************************************************************************************************************
@@ -169,8 +169,9 @@ const verifyDate = (message, data) => ('Not available' != verifyString(data)) ? 
 const verifyAdult = data => (data) ? '⚠️ *Rated as adult content*\n' : '';
 
 /**
- * 
- * @param {*} str 
+ * Verify if the given string has an array of integers inside it.
+ * @param {string} str - string to be parsed.
+ * @returns an array of integers.
  */
 const verifyNumbers = str => {
     const numbers = str.split(',');
@@ -206,9 +207,9 @@ const messageToString = string => Buffer.from(string, 'ascii')
 const parseToInt = str => (/\d+$/.test(str)) ? parseInt(str) : NaN;
 
 /**
- * 
- * @param {*} data -
- * @returns
+ * This function is the oppose to isNaN.
+ * @param {any} data - data to be verified,
+ * @returns Boolean,
  */
 const notNaN = data => !isNaN(data);
 

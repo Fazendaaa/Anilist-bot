@@ -2,7 +2,7 @@
   "name": "anilist-bot",
   "version": "1.0.0",
   "description": "Telegram bot that searches data in Anilist",
-  "main": "./src/build/bot.js",
+  "main": "build/bot.js",
   "babel": {
     "presets": [
       "es2015-node5"
