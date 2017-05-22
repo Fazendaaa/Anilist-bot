@@ -235,20 +235,20 @@ const replyWatchlist = (index, id) => {
 
 /**
  * Search Anilist database.
- * @param {string} error - Error message to be invoced.
+ * @param {string} errorMessage - Error message to be invoced.
  * @param {string} type - What type of search must be done: anime, character, staff or studio.
  * @param {string} value - Item to be searched for.
  * @param {function} callback - Function to set data into Telegram standars.
  */
 const getSearch = (_ref, callback) => {
-    let error = _ref.error,
+    let errorMessage = _ref.errorMessage,
         type = _ref.type,
         value = _ref.value;
 
-    return _nani2.default.get(`${type}/search/${value}`).then(data => !data.hasOwnProperty('error') ? callback(data[0]) : error).catch(error => {
+    if ('' != value) return _nani2.default.get(`${type}/search/${value}`).then(data => !data.hasOwnProperty('error') ? callback(data[0]) : errorMessage).catch(error => {
         console.log(`[Error:${type}:${value}] getSearch:`, error);
-        return error;
-    });
+        return errorMessage;
+    });else return Promise.resolve(errorMessage);
 };
 
 /**
