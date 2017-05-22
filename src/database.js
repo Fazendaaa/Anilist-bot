@@ -56,7 +56,7 @@ export default class DB {
     }
 
     addEntry(user_id, anime_id) {
-
+        
         return Promise.resolve(
             this.User.findOneAndUpdate({id: user_id}, {id: user_id}, this.options)
                 .then(result => {
