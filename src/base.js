@@ -11,6 +11,7 @@ import {
     search,
     notFound,
     logo_al,
+    empty,
     watchMessage,
     removeCmd,
     messageToString,
@@ -452,8 +453,9 @@ const buttons = (db, user, id, type, button) => {
 
 
 /**
- * 
- * @param {*} id 
+ * Given anime ID, returns a formated Telegram layout info.
+ * @param {Number} id - Anime id.
+ * @returns Anime formated Telegram layout.
  */
 const getAnimeID = id => {
     return Promise.resolve(
@@ -511,7 +513,7 @@ const watchlist = (array, index) => {
                       });
     }
     else
-        return Promise.resolve('*Your watchlist is empty*');
+        return Promise.resolve(empty);
 }
 
 /***********************************************************************************************************************

@@ -1,11 +1,14 @@
 'use strict';
 
 import mongoose from 'mongoose';
-import {verifyNumbers} from './utils';
-
-/*  When this messages are into DB class construtctor they didn't work properly */
-const addedWL = 'Added to your watchlist!\nTo see it just open a chat with ANILISTbot and type /watchlist';
-const invalid = '*Invalid anime positon. Please send anime index that you want to remove.*';
+import dotenv from 'dotenv';
+import {
+    verifyNumbers,
+    addedWL,
+    invalid,
+    serverError,
+    empty
+} from './utils';
 
 /*  code from:  https://gist.github.com/eloone/11342252#file-binaryinsert-js  */
 const binaryInsert = (value, array, startVal, endVal) => {
@@ -46,7 +49,11 @@ const binaryInsert = (value, array, startVal, endVal) => {
 
 export default class DB {
     constructor() {
-        mongoose.connect('mongodb://localhost/anilist_db');
+        const uristring = process.env.MONGODB_URI || 'mongodb://localhost/anilist_db';
+        mongoose.connect(uristring);
+        const db = mongoose.connection;
+        db.on('error', console.error.bind(console, 'connection error:'));
+        db.once('open', () => {console.log('DB connected')});
         this.userSchema = mongoose.Schema({
             id: Number,
             animes: [Number]
@@ -56,54 +63,97 @@ export default class DB {
     }
 
     addEntry(user_id, anime_id) {
-        return Promise.resolve(
-            this.User.findOneAndUpdate({id: user_id}, {id: user_id}, this.options)
-                .then(result => {
-                    /*  Add new anime id to the user    */
+        return this.User.findOneAndUpdate({id: user_id}, {id: user_id}, this.options)
+            .then(result => {
+                // Add new anime id to the user
+                if(result)
                     binaryInsert(anime_id, result.animes);
-                    return result.save().then(data => addedWL)
-                                        .catch(err => console.log('[Error]AddEntry save:', error))
-                }).catch(error => console.log('[Error]AddEntry User:', error))
-        ).catch(error => console.log('[Error]AddEntry Promise:', error));
+                else
+                    result = new this.User({id: user_id, animes: [anime_id]});
+                return result.save().then(data => addedWL)
+                    .catch(error => {
+                        console.log('[Error]AddEntry save:', error)
+                        return serverError;
+                    })
+        }).catch(error => {
+            console.log('[Error]AddEntry User:', error);
+            return serverError;
+        })
     }
 
     fetchAnimes(user_id) {
-        return Promise.resolve(
-            this.User.findOne({id: user_id}).then(data => data.animes)
-                                            .catch(error =>console.log('[Error]fetchAnimes findOne:', error))
-        ).catch(error => console.log('[Error]fetchAnimes Promise:', error));
+        return this.User.findOne({id: user_id})
+            .then(data => {
+                if(data) return data.animes;
+                else return empty;
+            })
+            .catch(error => {
+                console.log('[Error]fetchAnimes findOne:', error)
+                return serverError;
+            })
     }
 
     rmAnimes(user_id, anime_pos) {
         const positions = verifyNumbers(anime_pos);
 
         if(positions.length > 0)
-            return Promise.resolve(
-                this.User.findOneAndUpdate({id: user_id}, {id: user_id}, this.options)
-                    .then(result => {
-                        let counter = 0;
-                        let removed = 0;
-                        const size = result.animes.length;
+            return this.User.findOneAndUpdate({id: user_id}, {id: user_id}, this.options)
+                .then(result => {
+                    if(result) {
+                        // In case that the user has no anime is his list anymore
+                        if(0 == result.animes.length)
+                            return Promise.resolve(empty)
+                                .catch(error => {
+                                    console.log('[Error]rmAnimes else Promise:', error)
+                                    return serverError;
+                                }); 
+                        else {
+                            let counter = 0;
+                            let removed = 0;
+                            const size = result.animes.length;
 
-                        for(let i in positions) {
-                            removed = positions[i]-counter;
-                            /*  Remove given anime  */
-                            if(0 <= removed && removed < result.animes.length) {
-                                result.animes.splice(removed, 1);
-                                counter += 1;
+                            for(let i in positions) {
+                                removed = positions[i]-counter;
+                                // Remove given anime
+                                if(0 <= removed && removed < result.animes.length) {
+                                    result.animes.splice(removed, 1);
+                                    counter += 1;
+                                }
                             }
-                        }
 
-                        /*  in this case, all postions that the user passed to remove were invalid  */
-                        if(result.animes.length == size)
-                            return Promise.resolve(invalid);
-                        else
-                            return result.save().then(data => result.animes)
-                                            .catch(err => console.log('[Error]rmAnimes save:', error));
-                    }).catch(error => console.log('[Error]rmAnimes User:', error))
-            ).catch(error => console.log('[Error]rmAnimes if Promise:', error));
+                            // In this case, all postions that the user passed to remove were invalid
+                            if(result.animes.length == size)
+                                return Promise.resolve(invalid)
+                                    .catch(error => {
+                                        console.log('[Error]rmAnimes save:', error)
+                                        return serverError;
+                                    });
+                            else
+                                return result.save().then(data => result.animes)
+                                    .catch(error => {
+                                        console.log('[Error]rmAnimes save:', error)
+                                        return serverError;
+                                });
+                        }
+                    }
+                    // If there's no result, that means that no user was found -- this implies that this user has no
+                    // watchlist yet
+                    else
+                        return Promise.resolve(empty)
+                            .catch(error => {
+                                console.log('[Error]rmAnimes else Promise:', error)
+                                return serverError;
+                            });
+            })
+            .catch(error => {
+                console.log('[Error]rmAnimes User:', error)
+                return serverError;
+            })
         else
             return Promise.resolve(invalid)
-                          .catch(error => console.log('[Error]rmAnimes else Promise:', error));
+                .catch(error => {
+                    console.log('[Error]rmAnimes else Promise:', error)
+                    return serverError;
+                });
     }
 }

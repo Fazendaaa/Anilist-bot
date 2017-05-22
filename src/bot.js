@@ -86,17 +86,26 @@ bot.command('/watchlist', ctx => {
     const preview = (index) ? {parse_mode:'Markdown'} : parse;
 
     db.fetchAnimes(ctx.message.from.id)
-      .then(data => watchlist(data, index).then(response =>{
-           if('object' === typeof response)
-               for(let i in response)
-                   ctx.reply(response[i], preview)
-           else
-               ctx.reply(response, preview)
-      }))
-      .catch(error => {
-          console.log('[Error] /watchlist:', error);
-          ctx.reply('*Could not query your data. Please, try it later.*', {parse_mode:'Markdown'});
-      });
+        .then(data => {
+            if('string' === typeof data)
+                ctx.reply(data, {parse_mode:'Markdown'});
+            else
+                watchlist(data, index).then(response => {
+                    if('object' === typeof response)
+                        for(let i in response)
+                            ctx.reply(response[i], {parse_mode:'Markdown'});
+                    else
+                        ctx.reply(response, preview);
+                })
+                .catch(error => {
+                    console.log('[Error] /watchlist watchlist:', error);
+                    ctx.reply('*Could not query your data. Please, try it later.*', {parse_mode:'Markdown'});
+                });
+        })
+        .catch(error => {
+            console.log('[Error] /watchlist:', error);
+            ctx.reply('*Could not query your data. Please, try it later.*', {parse_mode:'Markdown'});
+        });
 });
 
 bot.command('/rm', ctx => {

@@ -29,6 +29,10 @@ or\n\
 */rm* _index1, index2, index3, ..._\n';
 const defaultResponse = 'Please, feel free to search Anilist.';
 const messageSearch = 'Search for animes, character, staff and studios.';
+const addedWL = 'Added to your watchlist!\nTo see it just open a chat with ANILISTbot and type /watchlist';
+const invalid = '*Invalid anime positon. Please send anime index that you want to remove.*';
+const serverError = '*Seems like our database has some issues. Please contact @Farmy about that. Or try again later*';
+const empty = '*Your watchlist is empty*';
 const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/logo_al.png';
 const search = {
                     id: '1',
@@ -226,6 +230,10 @@ module.exports = {
     notFound,
     logo_al,
     watchMessage,
+    addedWL,
+    invalid,
+    serverError,
+    empty,
     removeCmd,
     messageToString,
     verifyData,
