@@ -286,15 +286,12 @@ const replyWatchlist = (index, id) => {
  * @param {function} callback - Function to set data into Telegram standars.
  */
 const getSearch = ({errorMessage, type, value}, callback) => {
-    if('' != value)
-        return nani.get(`${type}/search/${(value)}`)
+    return nani.get(`${type}/search/${('' != value ? value: null)}`)
         .then(data => (!data.hasOwnProperty('error')) ? callback(data[0]) : errorMessage)
         .catch(error => {
             console.log(`[Error:${type}:${value}] getSearch:`, error);
             return errorMessage;
         });
-    else
-        return Promise.resolve(errorMessage);
 }
 
 /**
@@ -302,42 +299,28 @@ const getSearch = ({errorMessage, type, value}, callback) => {
  * @param {string} anime - Anime name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const animeSearch = anime => getSearch({error: notAnime, type: 'anime', value: anime}, replyAnime).then(data => data);
+const animeSearch = anime => getSearch({errorMessage: notAnime, type: 'anime', value: anime}, replyAnime).then(data => data);
 
 /**
  * Search for character and returns it all the gathered data.
  * @param {string} character - Character name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const characterSearch = character => getSearch({error: notCharacter, type: 'character', value: character}, replyCharacter).then(data => data);
+const characterSearch = character => getSearch({errorMessage: notCharacter, type: 'character', value: character}, replyCharacter).then(data => data);
 
 /**
  * Search for staff and fetch it the gathered data.
  * @param {string} staff - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const staffSearch = staff => getSearch({error: notStaff, type: 'staff', value: staff}, replyStaff).then(data => data);
+const staffSearch = staff => getSearch({errorMessage: notStaff, type: 'staff', value: staff}, replyStaff).then(data => data);
 
 /**
  * Search for studio and fetch it the gathered data.
  * @param {string} studio - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const studioSearch = studio => getSearch({error: notStudio, type: 'studio', value: studio}, replyStudio).then(data => data);
-
-/**
- * Query all info about searched element.
- * @param {string} type - What kind of content array represents
- * @param {Array.<json>} array - Results from Anilist API.
- * @returns {Object[]} All of searched data in Telegram inline standards.
- */
-const __inlineSearch = (type, array) => {
-    return Promise.all(array.map(data => replyInline(type, data)))
-                  .catch(error => {
-                      console.log('[Error] __inlineSearch Promise:', error)
-                      return [notFound]
-                  });
-}
+const studioSearch = studio => getSearch({errorMessage: notStudio, type: 'studio', value: studio}, replyStudio).then(data => data);
 
 /**
  * Search it all the matches for the user query.
@@ -350,38 +333,14 @@ const inlineSearch = query => {
     if('' == query)
         return Promise.resolve([search]);
     else
-        return Promise.all(types.map(type => {
-            return nani.get(`${type}/search/${query}`)
-                       .then(data => {
-                           /*  Case that the search was not successfully   */
-                           return (!data.hasOwnProperty('error')) ? __inlineSearch(type, data) : null;
-                       })
-                       .catch(error => {
-                           console.log('[Error] inlineSearch nani:', error);
-                           return [notFound];
-                       })
-        }))
-        .then(data => {
-            /*  Flatening array */
-            return data.reduce((acc, cur) => {
-                if(null != cur)
-                    acc = acc.concat(cur)
-                return acc
-            }, []);
-        })
-        .then(data => {
-            if(0 == data.length)
-                data = [notFound];
-            /*  Telegram only supports to 20 query results  */
-            else
-                data = data.slice(0, 19);
-
-            return data;
-        })
-        .catch(error => {
-            console.log('[Error] inlineSearch:', error);
-            return [notFound];
-        })
+        return Promise.all(types.map(type => nani.get(`${type}/search/${query}`)
+            .then(data => (!data.hasOwnProperty('error')) ? data.map(element => replyInline(type, element)) : [])))
+            .then(data => data.reduce((acc, cur) => acc.concat(cur), []))
+            .then(data => (0 == data.length) ? [notFound] : data.slice(0, 19))
+            .catch(error => {
+                console.log('[Error] inlineSearch:', error);
+                return [notFound];
+            });
 }
 
 /***********************************************************************************************************************

@@ -9,7 +9,7 @@ import moment from 'moment';
 const welcome = "Welcome to _ANILISTbot_. The *UNOFFICIAL* application for searches in Anilist.\n\nType:\n/help";
 
 const help = "Usage:\n\n\
-*Inline mode: This bot can help you find what you want search.It works automatically, no need to add it anywhere. Simply open any of your chats and type @ANILISTbot something in the message field. Then tap on a result to send.*\n\n\
+*Inline mode: This bot can help you find what you want search. It works automatically, no need to add it anywhere. Simply open any of your chats and type @ANILISTbot something in the message field. Then tap on a result to send.*\n\n\
 For example, try it typing:\n\
 @ANILISTbot _'Pokemon'_\n\n\
 To see it more options: /cmd\n\n\
