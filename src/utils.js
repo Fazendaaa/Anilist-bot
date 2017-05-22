@@ -7,8 +7,15 @@ import moment from 'moment';
  **********************************************************************************************************************/
 
 const welcome = "Welcome to _ANILISTbot_. The *UNOFFICIAL* application for searches in Anilist.\n\nType:\n/help";
+
 const help = "Usage:\n\n\
-@ANILISTbot _'anime/character/staff/studio name'_\n\
+*Inline mode: This bot can help you find what you want search.It works automatically, no need to add it anywhere. Simply open any of your chats and type @ANILISTbot something in the message field. Then tap on a result to send.*\n\n\
+For example, try it typing:\n\
+@ANILISTbot _'Pokemon'_\n\n\
+To see it more options: /cmd\n\n\
+Any bugs or suggestions, talk to: @Farmy";
+
+const cmdMessage = "\
 /anime _'anime name'_\n\
 /character _'character name'_\n\
 /staff _'staff name'_\n\
@@ -17,8 +24,8 @@ const help = "Usage:\n\n\
 /watchlist _'index'_ ― see data about your saved anime\n\
 /rm _'index'_ ― remove from your watchlist\n\
 /rm _'index1', 'index2', 'index3', ..._ ― remove from your watchlist\n\
-/source ― see the code behind ANILISTbot\n\n\
-Any bugs or suggestions, talk to: @farmy";
+/source ― see the code behind ANILISTbot";
+
 const watchMessage = '\n*For more info about your animes:*\n\
 */watchlist* _index_\n\
 or\n\
@@ -27,6 +34,13 @@ or\n\
 */rm* _index_\n\
 or\n\
 */rm* _index1, index2, index3, ..._\n';
+
+const notAnime = '*Anime not found: do it again, please.*';
+const notCharacter = '*Character not found: do it again, please.*';
+const notStaff = '*Staff not found: do it again, please.*';
+const notStudio = '*Studio not found: do it again, please.*';
+const notQuery = '*Could not query your data. Please, try it later.*';
+const notRm = '*Could remove your data. Please, try it later.*';
 const defaultResponse = 'Please, feel free to search Anilist.';
 const messageSearch = 'Search for animes, character, staff and studios.';
 const addedWL = 'Added to your watchlist!\nTo see it just open a chat with ANILISTbot and type /watchlist';
@@ -34,6 +48,7 @@ const invalid = '*Invalid anime positon. Please send anime index that you want t
 const serverError = '*Seems like our database has some issues. Please contact @Farmy about that. Or try again later*';
 const empty = '*Your watchlist is empty*';
 const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/logo_al.png';
+
 const search = {
                     id: '1',
                     title: 'Search for anything',
@@ -227,7 +242,14 @@ module.exports = {
     defaultResponse,
     messageSearch,
     search,
+    cmdMessage,
     notFound,
+    notAnime,
+    notCharacter,
+    notStaff,
+    notStudio,
+    notQuery,
+    notRm,
     logo_al,
     watchMessage,
     addedWL,

@@ -13,6 +13,12 @@ import {
     logo_al,
     empty,
     watchMessage,
+    notAnime,
+    notCharacter,
+    notStaff,
+    notStudio,
+    notQuery,
+    notRm,
     removeCmd,
     messageToString,
     verifyData,
@@ -273,80 +279,48 @@ const replyWatchlist = (index, id) => {
  **********************************************************************************************************************/
 
 /**
+ * Search Anilist database.
+ * @param {string} error - Error message to be invoced.
+ * @param {string} type - What type of search must be done: anime, character, staff or studio.
+ * @param {string} value - Item to be searched for.
+ * @param {function} callback - Function to set data into Telegram standars.
+ */
+const getSearch = ({error, type, value}, callback) => {
+    return nani.get(`${type}/search/${value}`)
+        .then(data => (!data.hasOwnProperty('error')) ? callback(data[0]) : error)
+        .catch(error => {
+            console.log(`[Error:${type}:${value}] getSearch:`, error);
+            return error;
+        });
+}
+
+/**
  * Search for anime and returns it all the gathered data.
  * @param {string} anime - Anime name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const animeSearch = anime => {
-    const errorMessage = '*Anime not found: search it again, please.*';
-
-    if('' != anime)
-        return nani.get(`anime/search/${anime}`)
-                   .then(data => replyAnime(data[0]))
-                   .catch(error => {
-                       console.log('[Error] animeSearch:', error)
-                       return errorMessage
-                   });
-    else
-        return Promise.resolve(errorMessage);
-}
+const animeSearch = anime => getSearch({error: notAnime, type: 'anime', value: anime}, replyAnime).then(data => data);
 
 /**
  * Search for character and returns it all the gathered data.
  * @param {string} character - Character name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const characterSearch = character => {
-    const errorMessage = '*Character not found: search it again, please.*';
-
-    if('' != character)
-        return nani.get(`character/search/${character}`)
-                   .then(data => replyCharacter(data[0]))
-                   .catch(error => {
-                       console.log('[Error] characterSearch:', error)
-                       return errorMessage
-                   });
-    else
-        return Promise.resolve(errorMessage);
-}
+const characterSearch = character => getSearch({error: notCharacter, type: 'character', value: character}, replyCharacter).then(data => data);
 
 /**
  * Search for staff and fetch it the gathered data.
- * @param {string} search - Value of search.
+ * @param {string} staff - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const staffSearch = search => {
-    const errorMessage = `*Staff not found: search it again, please.*`;
-
-    if('' != search)
-        return nani.get(`staff/search/${search}`)
-                   .then(data => replyStaff(data[0]))
-                   .catch(error => {
-                       console.log('[Error] staffSearch:', error)
-                       return errorMessage
-                   });
-    else
-        return Promise.resolve(errorMessage);
-}
+const staffSearch = staff => getSearch({error: notStaff, type: 'staff', value: staff}, replyStaff).then(data => data);
 
 /**
  * Search for studio and fetch it the gathered data.
- * @param {string} search - Value of search.
+ * @param {string} studio - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const studioSearch = search => {
-    const errorMessage = `*Studio not found: search it again, please.*`;
-
-    if('' != search)
-        return nani.get(`studio/search/${search}`)
-                   .then(data => replyStudio(data[0]))
-                   .catch(error => {
-                       console.log('[Error] studioSearch:', error)
-                       return errorMessage
-                   });
-    else
-        return Promise.resolve(errorMessage);
-}
+const studioSearch = studio => getSearch({error: notStudio, type: 'studio', value: studio}, replyStudio).then(data => data);
 
 /**
  * Query all info about searched element.

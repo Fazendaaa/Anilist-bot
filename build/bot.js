@@ -33,6 +33,8 @@ bot.command('start', ctx => ctx.reply(_utils.welcome, { parse_mode: 'Markdown' }
 
 bot.command('help', ctx => ctx.reply(_utils.help, { parse_mode: 'Markdown' }));
 
+bot.command('cmd', ctx => ctx.reply(_utils.cmdMessage, { parse_mode: 'Markdown' }));
+
 bot.command('source', ctx => ctx.reply('https://github.com/Fazendaaa/Anilist-bot', { parse_mode: 'Markdown' }));
 
 bot.command('anime', ctx => {
@@ -40,7 +42,7 @@ bot.command('anime', ctx => {
 
     (0, _base.animeSearch)(anime).then(data => ctx.reply(data, { parse_mode: 'Markdown' })).catch(error => {
         console.log('[Error] /anime:', error);
-        ctx.reply('*Anime not found: do it again, please.*', { parse_mode: 'Markdown' });
+        ctx.reply(_utils.notAnime, { parse_mode: 'Markdown' });
     });
 });
 
@@ -49,7 +51,7 @@ bot.command('character', ctx => {
 
     (0, _base.characterSearch)(character).then(data => ctx.reply(data, { parse_mode: 'Markdown' })).catch(error => {
         console.log('[Error] /character:', error);
-        ctx.reply('*Character not found: do it again, please.*', { parse_mode: 'Markdown' });
+        ctx.reply(_utils.notCharacter, { parse_mode: 'Markdown' });
     });
 });
 
@@ -58,7 +60,7 @@ bot.command('staff', ctx => {
 
     (0, _base.staffSearch)(staff).then(data => ctx.reply(data, { parse_mode: 'Markdown' })).catch(error => {
         console.log('[Error] /staff:', error);
-        ctx.reply('*Staff not found: do it again, please.*', { parse_mode: 'Markdown' });
+        ctx.reply(_utils.notStaff, { parse_mode: 'Markdown' });
     });
 });
 
@@ -67,7 +69,7 @@ bot.command('studio', ctx => {
 
     (0, _base.studioSearch)(studio).then(data => ctx.reply(data, { parse_mode: 'Markdown' })).catch(error => {
         console.log('[Error] /studio:', error);
-        ctx.reply('*Studio not found: do it again, please.*', { parse_mode: 'Markdown' });
+        ctx.reply(_utils.notStudio, { parse_mode: 'Markdown' });
     });
 });
 
@@ -80,11 +82,11 @@ bot.command('/watchlist', ctx => {
             if ('object' === typeof response) for (let i in response) ctx.reply(response[i], { parse_mode: 'Markdown' });else ctx.reply(response, preview);
         }).catch(error => {
             console.log('[Error] /watchlist watchlist:', error);
-            ctx.reply('*Could not query your data. Please, try it later.*', { parse_mode: 'Markdown' });
+            ctx.reply(_utils.notQuery, { parse_mode: 'Markdown' });
         });
     }).catch(error => {
         console.log('[Error] /watchlist:', error);
-        ctx.reply('*Could not query your data. Please, try it later.*', { parse_mode: 'Markdown' });
+        ctx.reply(_utils.notQuery, { parse_mode: 'Markdown' });
     });
 });
 
@@ -92,10 +94,13 @@ bot.command('/rm', ctx => {
     const anime = (0, _utils.messageToString)((0, _utils.removeCmd)(ctx));
 
     db.rmAnimes(ctx.message.from.id, anime).then(data => {
-        if ('string' === typeof data) ctx.reply(data, { parse_mode: 'Markdown' });else (0, _base.watchlist)(data).then(response => ctx.reply(response, parse)).catch(error => error);
+        if ('string' === typeof data) ctx.reply(data, { parse_mode: 'Markdown' });else (0, _base.watchlist)(data).then(response => ctx.reply(response, parse)).catch(error => {
+            console.log('[Error] /rm watchlist:', error);
+            ctx.reply(_utils.notRm, { parse_mode: 'Markdown' });
+        });
     }).catch(error => {
         console.log('[Error] /rm:', error);
-        ctx.reply('*Could remove your data. Please, try it later.*', { parse_mode: 'Markdown' });
+        ctx.reply(_utils.notRm, { parse_mode: 'Markdown' });
     });
 });
 
