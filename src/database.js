@@ -56,7 +56,6 @@ export default class DB {
     }
 
     addEntry(user_id, anime_id) {
-        
         return Promise.resolve(
             this.User.findOneAndUpdate({id: user_id}, {id: user_id}, this.options)
                 .then(result => {
@@ -83,16 +82,23 @@ export default class DB {
                 this.User.findOneAndUpdate({id: user_id}, {id: user_id}, this.options)
                     .then(result => {
                         let counter = 0;
+                        let removed = 0;
+                        const size = result.animes.length;
 
                         for(let i in positions) {
+                            removed = positions[i]-counter;
                             /*  Remove given anime  */
-                            if(0 <= positions[i] && positions[i] < result.animes.length) {
-                                result.animes.splice(positions[i]-counter, 1);
-                                counter = 1;
+                            if(0 <= removed && removed < result.animes.length) {
+                                result.animes.splice(removed, 1);
+                                counter += 1;
                             }
                         }
 
-                        return result.save().then(data => result.animes)
+                        /*  in this case, all postions that the user passed to remove were invalid  */
+                        if(result.animes.length == size)
+                            return Promise.resolve(invalid);
+                        else
+                            return result.save().then(data => result.animes)
                                             .catch(err => console.log('[Error]rmAnimes save:', error));
                     }).catch(error => console.log('[Error]rmAnimes User:', error))
             ).catch(error => console.log('[Error]rmAnimes if Promise:', error));

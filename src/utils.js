@@ -21,10 +21,10 @@ const help = "Usage:\n\n\
 Any bugs or suggestions, talk to: @farmy";
 const watchMessage = '\n*For more info about your animes:*\n\
 */watchlist* _index_\n\
-or\
+or\n\
 */watchlist* _index1, index2, index3, ..._\n\
-*If you want to remove any anime from your watchlist just type:*\n\
-*/rm* _anime index_\n\
+\n*If you want to remove any anime from your watchlist just type:*\n\
+*/rm* _index_\n\
 or\n\
 */rm* _index1, index2, index3, ..._\n';
 const defaultResponse = 'Please, feel free to search Anilist.';
