@@ -34,4 +34,4 @@ Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy
 
 ## TODO
 
-* Implement watchlist button: this will allow the user to save the anime reference.
+* Integration with wit.ia
