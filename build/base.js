@@ -6,8 +6,6 @@ var _dotenv2 = _interopRequireDefault(_dotenv);
 
 var _telegraf = require('telegraf');
 
-var _telegraf2 = _interopRequireDefault(_telegraf);
-
 var _nani = require('nani');
 
 var _nani2 = _interopRequireDefault(_nani);
@@ -62,29 +60,30 @@ const replyStatus = data => {
 };
 
 /**
- * This function allow the buttons search for the given id data.
- * @param {string} id - Anilist id.
- * @param {string} type - Type of the content.
+ * This function allow the buttons search for the given id anime.
+ * @param {string} id - Anime id.
  * @returns {buttons} Array of buttons to be linked in the message.
  */
-const replyButton = (id, type) => {
-    let data;
+const animeButton = id => {
+    return _telegraf.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('Description', `${id}/anime/description`), m.callbackButton('Genres', `${id}/anime/genres`), m.callbackButton('Users', `${id}/anime/users`), m.callbackButton('Watchlist', `${id}/anime/watchlist`)]));
+};
 
-    switch (type) {
-        case 'anime':
-            data = _telegraf2.default.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('Description', `${id}/${type}/description`), m.callbackButton('Genres', `${id}/${type}/genres`), m.callbackButton('Users', `${id}/${type}/users`), m.callbackButton('Watchlist', `${id}/${type}/watchlist`)])).reply_markup;
-            break;
-        case 'character':
-            data = _telegraf2.default.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('Description', `${id}/${type}/description`)])).reply_markup;
-            break;
-        case 'staff':
-            data = _telegraf2.default.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('Description', `${id}/${type}/description`)])).reply_markup;
-            break;
-        default:
-            data = undefined;
-    }
+/**
+ * This function allow the buttons search for the given id character.
+ * @param {string} id - Character id.
+ * @returns {buttons} Array of buttons to be linked in the message.
+ */
+const characterButton = id => {
+    return _telegraf.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('Description', `${id}/character/description`)]));
+};
 
-    return data;
+/**
+ * This function allow the buttons search for the given id staff.
+ * @param {string} id - Staff id.
+ * @returns {buttons} Array of buttons to be linked in the message.
+ */
+const staffButton = id => {
+    return _telegraf.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('Description', `${id}/staff/description`)]));
 };
 
 /**
@@ -167,7 +166,7 @@ const replyInline = (type, data) => {
             dataId = `${data.id}`;
             dataTitle = data.title_english;
             messageText = replyAnime(data);
-            buttonsMarkup = replyButton(data.id, 'anime');
+            buttonsMarkup = animeButton(data.id).reply_markup;
             dataDescription = (0, _utils.verifyString)(data.description);
             thumbUrl = data.image_url_med;
             break;
@@ -175,7 +174,7 @@ const replyInline = (type, data) => {
             dataId = `${data.id}`;
             dataTitle = data.name_first;
             messageText = replyCharacter(data);
-            buttonsMarkup = replyButton(data.id, 'character');
+            buttonsMarkup = characterButton(data.id).reply_markup;
             dataDescription = (0, _utils.verifyString)(data.info);
             thumbUrl = data.image_url_lge;
             break;
@@ -183,7 +182,7 @@ const replyInline = (type, data) => {
             dataId = `${data.id}`;
             dataTitle = data.name_first;
             messageText = replyStaff(data);
-            buttonsMarkup = replyButton(data.id, 'staff');
+            buttonsMarkup = staffButton(data.id, 'staff').reply_markup;
             dataDescription = (0, _utils.verifyString)(data.info);
             thumbUrl = data.image_url_lge;
             break;
@@ -240,15 +239,17 @@ const replyWatchlist = (index, id) => {
  * @param {string} value - Item to be searched for.
  * @param {function} callback - Function to set data into Telegram standars.
  */
-const getSearch = (_ref, callback) => {
+const getSearch = (_ref) => {
     let errorMessage = _ref.errorMessage,
         type = _ref.type,
-        value = _ref.value;
+        value = _ref.value,
+        reply = _ref.reply,
+        button = _ref.button;
 
-    if ('' != value) return _nani2.default.get(`${type}/search/${value}`).then(data => !data.hasOwnProperty('error') ? callback(data[0]) : errorMessage).catch(error => {
+    return _nani2.default.get(`${type}/search/${'' != value ? value : undefined}`).then(data => !data.hasOwnProperty('error') ? [reply(data[0]), button ? button(data[0].id) : { parse_mode: 'Markdown' }] : [errorMessage, { parse_mode: 'Markdown' }]).catch(error => {
         console.log(`[Error:${type}:${value}] getSearch:`, error);
         return errorMessage;
-    });else return Promise.resolve(errorMessage);
+    });
 };
 
 /**
@@ -256,41 +257,28 @@ const getSearch = (_ref, callback) => {
  * @param {string} anime - Anime name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const animeSearch = anime => getSearch({ error: _utils.notAnime, type: 'anime', value: anime }, replyAnime).then(data => data);
+const animeSearch = anime => getSearch({ errorMessage: _utils.notAnime, type: 'anime', value: anime, reply: replyAnime, button: animeButton }).then(data => data);
 
 /**
  * Search for character and returns it all the gathered data.
  * @param {string} character - Character name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const characterSearch = character => getSearch({ error: _utils.notCharacter, type: 'character', value: character }, replyCharacter).then(data => data);
+const characterSearch = character => getSearch({ errorMessage: _utils.notCharacter, type: 'character', value: character, reply: replyCharacter, button: characterButton }).then(data => data);
 
 /**
  * Search for staff and fetch it the gathered data.
  * @param {string} staff - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const staffSearch = staff => getSearch({ error: _utils.notStaff, type: 'staff', value: staff }, replyStaff).then(data => data);
+const staffSearch = staff => getSearch({ errorMessage: _utils.notStaff, type: 'staff', value: staff, reply: replyStaff, button: staffButton }).then(data => data);
 
 /**
  * Search for studio and fetch it the gathered data.
  * @param {string} studio - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const studioSearch = studio => getSearch({ error: _utils.notStudio, type: 'studio', value: studio }, replyStudio).then(data => data);
-
-/**
- * Query all info about searched element.
- * @param {string} type - What kind of content array represents
- * @param {Array.<json>} array - Results from Anilist API.
- * @returns {Object[]} All of searched data in Telegram inline standards.
- */
-const __inlineSearch = (type, array) => {
-    return Promise.all(array.map(data => replyInline(type, data))).catch(error => {
-        console.log('[Error] __inlineSearch Promise:', error);
-        return [_utils.notFound];
-    });
-};
+const studioSearch = studio => getSearch({ errorMessage: _utils.notStudio, type: 'studio', value: studio, reply: replyStudio, button: undefined }).then(data => data);
 
 /**
  * Search it all the matches for the user query.
@@ -300,27 +288,7 @@ const __inlineSearch = (type, array) => {
 const inlineSearch = query => {
     const types = ['anime', 'character', 'staff', 'studio'];
 
-    if ('' == query) return Promise.resolve([_utils.search]);else return Promise.all(types.map(type => {
-        return _nani2.default.get(`${type}/search/${query}`).then(data => {
-            /*  Case that the search was not successfully   */
-            return !data.hasOwnProperty('error') ? __inlineSearch(type, data) : null;
-        }).catch(error => {
-            console.log('[Error] inlineSearch nani:', error);
-            return [_utils.notFound];
-        });
-    })).then(data => {
-        /*  Flatening array */
-        return data.reduce((acc, cur) => {
-            if (null != cur) acc = acc.concat(cur);
-            return acc;
-        }, []);
-    }).then(data => {
-        if (0 == data.length) data = [_utils.notFound];
-        /*  Telegram only supports to 20 query results  */
-        else data = data.slice(0, 19);
-
-        return data;
-    }).catch(error => {
+    if ('' == query) return Promise.resolve([_utils.search]);else return Promise.all(types.map(type => _nani2.default.get(`${type}/search/${query}`).then(data => !data.hasOwnProperty('error') ? data.map(element => replyInline(type, element)) : []))).then(data => data.reduce((acc, cur) => acc.concat(cur), [])).then(data => 0 == data.length ? [_utils.notFound] : data.slice(0, 19)).catch(error => {
         console.log('[Error] inlineSearch:', error);
         return [_utils.notFound];
     });
@@ -416,6 +384,7 @@ module.exports = {
     buttons: buttons,
     inlineSearch: inlineSearch,
     animeSearch: animeSearch,
+    animeButton: animeButton,
     characterSearch: characterSearch,
     staffSearch: staffSearch,
     studioSearch: studioSearch,

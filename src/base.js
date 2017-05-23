@@ -285,7 +285,7 @@ const replyWatchlist = (index, id) => {
  */
 const getSearch = ({errorMessage, type, value, reply, button}) => {
     return nani.get(`${type}/search/${('' != value ? value: undefined)}`)
-        .then(data => (!data.hasOwnProperty('error')) ? [reply(data[0]), button(data[0].id)] : [errorMessage, {parse_mode: 'Markdown'}])
+        .then(data => (!data.hasOwnProperty('error')) ? [reply(data[0]), (button) ? button(data[0].id) : {parse_mode: 'Markdown'}] : [errorMessage, {parse_mode: 'Markdown'}])
         .catch(error => {
             console.log(`[Error:${type}:${value}] getSearch:`, error);
             return errorMessage;
