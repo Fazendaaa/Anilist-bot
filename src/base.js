@@ -1,7 +1,10 @@
 'use strict';
 
 import dotenv from 'dotenv';
-import Telegraf from 'telegraf';
+import {
+    Telegraf,
+    Extra
+} from 'telegraf';
 import nani from 'nani';
 import {
     welcome,
@@ -85,50 +88,45 @@ const replyStatus = data => {
 }
 
 /**
- * This function allow the buttons search for the given id data.
- * @param {string} id - Anilist id.
- * @param {string} type - Type of the content.
+ * This function allow the buttons search for the given id anime.
+ * @param {string} id - Anime id.
  * @returns {buttons} Array of buttons to be linked in the message.
  */
-const replyButton = (id, type) => {
-    let data;
+const animeButton = id => {
+    return Extra.markdown().markup((m) =>
+        m.inlineKeyboard([
+            m.callbackButton('Description', `${id}/anime/description`),
+            m.callbackButton('Genres', `${id}/anime/genres`),
+            m.callbackButton('Users', `${id}/anime/users`),
+            m.callbackButton('Watchlist', `${id}/anime/watchlist`)
+        ])
+    );
+}
 
-    switch(type) {
-        case 'anime':
-            data = Telegraf.Extra
-                           .markdown()
-                           .markup((m) =>
-                               m.inlineKeyboard([
-                                   m.callbackButton('Description', `${id}/${type}/description`),
-                                   m.callbackButton('Genres', `${id}/${type}/genres`),
-                                   m.callbackButton('Users', `${id}/${type}/users`),
-                                   m.callbackButton('Watchlist', `${id}/${type}/watchlist`)
-                               ])
-                           ).reply_markup;
-            break;
-        case 'character':
-            data = Telegraf.Extra
-                           .markdown()
-                           .markup((m) =>
-                               m.inlineKeyboard([
-                                   m.callbackButton('Description', `${id}/${type}/description`)
-                               ])
-                           ).reply_markup;
-            break;
-        case 'staff':
-            data = Telegraf.Extra
-                           .markdown()
-                           .markup((m) =>
-                               m.inlineKeyboard([
-                                   m.callbackButton('Description', `${id}/${type}/description`)
-                               ])
-                           ).reply_markup;
-            break;
-        default:
-            data = undefined;
-    }
+/**
+ * This function allow the buttons search for the given id character.
+ * @param {string} id - Character id.
+ * @returns {buttons} Array of buttons to be linked in the message.
+ */
+const characterButton = id => {
+    return Extra.markdown().markup((m) =>
+        m.inlineKeyboard([
+            m.callbackButton('Description', `${id}/character/description`)
+        ])
+    );
+}
 
-    return data;
+/**
+ * This function allow the buttons search for the given id staff.
+ * @param {string} id - Staff id.
+ * @returns {buttons} Array of buttons to be linked in the message.
+ */
+const staffButton = id => {
+    return Extra.markdown().markup((m) =>
+        m.inlineKeyboard([
+            m.callbackButton('Description', `${id}/staff/description`)
+        ])
+    );
 }
 
 /**
@@ -211,7 +209,7 @@ const replyInline = (type, data) => {
             dataId = `${data.id}`;
             dataTitle = data.title_english;
             messageText = replyAnime(data);
-            buttonsMarkup = replyButton(data.id, 'anime');
+            buttonsMarkup = animeButton(data.id).reply_markup;
             dataDescription = verifyString(data.description);
             thumbUrl = data.image_url_med;
             break;
@@ -219,7 +217,7 @@ const replyInline = (type, data) => {
             dataId = `${data.id}`;
             dataTitle = data.name_first;
             messageText = replyCharacter(data);
-            buttonsMarkup = replyButton(data.id, 'character');
+            buttonsMarkup = characterButton(data.id).reply_markup;
             dataDescription = verifyString(data.info);
             thumbUrl = data.image_url_lge;
             break;
@@ -227,7 +225,7 @@ const replyInline = (type, data) => {
             dataId = `${data.id}`;
             dataTitle = data.name_first;
             messageText = replyStaff(data);
-            buttonsMarkup = replyButton(data.id, 'staff');
+            buttonsMarkup = staffButton(data.id, 'staff').reply_markup;
             dataDescription = verifyString(data.info);
             thumbUrl = data.image_url_lge;
             break;
@@ -285,9 +283,9 @@ const replyWatchlist = (index, id) => {
  * @param {string} value - Item to be searched for.
  * @param {function} callback - Function to set data into Telegram standars.
  */
-const getSearch = ({errorMessage, type, value}, callback) => {
-    return nani.get(`${type}/search/${('' != value ? value: null)}`)
-        .then(data => (!data.hasOwnProperty('error')) ? callback(data[0]) : errorMessage)
+const getSearch = ({errorMessage, type, value, reply, button}) => {
+    return nani.get(`${type}/search/${('' != value ? value: undefined)}`)
+        .then(data => (!data.hasOwnProperty('error')) ? [reply(data[0]), button(data[0].id)] : [errorMessage, {parse_mode: 'Markdown'}])
         .catch(error => {
             console.log(`[Error:${type}:${value}] getSearch:`, error);
             return errorMessage;
@@ -299,28 +297,28 @@ const getSearch = ({errorMessage, type, value}, callback) => {
  * @param {string} anime - Anime name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const animeSearch = anime => getSearch({errorMessage: notAnime, type: 'anime', value: anime}, replyAnime).then(data => data);
+const animeSearch = anime => getSearch({errorMessage: notAnime, type: 'anime', value: anime, reply: replyAnime, button: animeButton}).then(data => data);
 
 /**
  * Search for character and returns it all the gathered data.
  * @param {string} character - Character name.
  * @returns {string} Fetched data in Telegram standards.
  */
-const characterSearch = character => getSearch({errorMessage: notCharacter, type: 'character', value: character}, replyCharacter).then(data => data);
+const characterSearch = character => getSearch({errorMessage: notCharacter, type: 'character', value: character, reply: replyCharacter, button: characterButton}).then(data => data);
 
 /**
  * Search for staff and fetch it the gathered data.
  * @param {string} staff - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const staffSearch = staff => getSearch({errorMessage: notStaff, type: 'staff', value: staff}, replyStaff).then(data => data);
+const staffSearch = staff => getSearch({errorMessage: notStaff, type: 'staff', value: staff, reply: replyStaff, button: staffButton}).then(data => data);
 
 /**
  * Search for studio and fetch it the gathered data.
  * @param {string} studio - Value of search.
  * @returns {string} Fetched data in Telegram standards.
  */
-const studioSearch = studio => getSearch({errorMessage: notStudio, type: 'studio', value: studio}, replyStudio).then(data => data);
+const studioSearch = studio => getSearch({errorMessage: notStudio, type: 'studio', value: studio, reply: replyStudio, button: undefined}).then(data => data);
 
 /**
  * Search it all the matches for the user query.
@@ -460,6 +458,7 @@ module.exports = {
     buttons,
     inlineSearch,
     animeSearch,
+    animeButton,
     characterSearch,
     staffSearch,
     studioSearch,

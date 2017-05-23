@@ -50,7 +50,7 @@ bot.command('anime', ctx => {
     const anime = messageToString(removeCmd(ctx));
 
     animeSearch(anime)
-    .then(data => ctx.reply(data, {parse_mode:'Markdown'}))
+    .then(data => ctx.reply(data[0], data[1]))
     .catch(error => {
         console.log('[Error] /anime:', error);
         ctx.reply(notAnime, {parse_mode:'Markdown'});
@@ -61,7 +61,7 @@ bot.command('character', ctx => {
     const character = messageToString(removeCmd(ctx));
 
     characterSearch(character)
-    .then(data => ctx.reply(data, {parse_mode:'Markdown'}))
+    .then(data => ctx.reply(data[0], data[1]))
     .catch(error => {
         console.log('[Error] /character:', error);
         ctx.reply(notCharacter, {parse_mode:'Markdown'});
@@ -72,7 +72,7 @@ bot.command('staff', ctx => {
     const staff = messageToString(removeCmd(ctx));
 
     staffSearch(staff)
-    .then(data => ctx.reply(data, {parse_mode:'Markdown'}))
+    .then(data => ctx.reply(data[0], data[1]))
     .catch(error => {
         console.log('[Error] /staff:', error);
         ctx.reply(notStaff, {parse_mode:'Markdown'});
@@ -83,7 +83,7 @@ bot.command('studio', ctx => {
     const studio = messageToString(removeCmd(ctx));
 
     studioSearch(studio)
-    .then(data => ctx.reply(data, {parse_mode:'Markdown'}))
+    .then(data => ctx.reply(data[0], data[1]))
     .catch(error => {
         console.log('[Error] /studio:', error);
         ctx.reply(notStudio, {parse_mode:'Markdown'});
