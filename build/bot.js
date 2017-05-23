@@ -79,7 +79,7 @@ bot.command('/watchlist', ctx => {
 
     db.fetchAnimes(ctx.message.from.id).then(data => {
         if ('string' === typeof data) ctx.reply(data, { parse_mode: 'Markdown' });else (0, _base.watchlist)(data, index).then(response => {
-            if ('object' === typeof response) for (let i in response) ctx.reply(response[i], { parse_mode: 'Markdown' });else ctx.reply(response, preview);
+            if ('object' === typeof response) for (let i in response) ctx.reply(response[i][0], response[i][1]);else ctx.reply(response, preview);
         }).catch(error => {
             console.log('[Error] /watchlist watchlist:', error);
             ctx.reply(_utils.notQuery, { parse_mode: 'Markdown' });

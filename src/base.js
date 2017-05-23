@@ -394,15 +394,15 @@ const buttons = (db, user, id, type, button) => {
 const getAnimeID = id => {
     return Promise.resolve(
         nani.get(`anime/${id}`)
-            .then(data => replyAnime(data))
+            .then(data => [replyAnime(data), animeButton(data.id)])
             .catch((error) => {
                 console.log('[Error] getAnimeID nani:', error)
-                return '*Anime not found.*';
+                return ['*Anime not found.*', {parse_mode: 'Markdown'}];
             })
     )
     .catch((error) => {
         console.log('[Error] getAnimeID Promise:', error)
-        return '*Anime not found.*';
+        return ['*Anime not found.*', {parse_mode: 'Markdown'}];
     });
 }
 

@@ -102,7 +102,7 @@ bot.command('/watchlist', ctx => {
                 watchlist(data, index).then(response => {
                     if('object' === typeof response)
                         for(let i in response)
-                            ctx.reply(response[i], {parse_mode:'Markdown'});
+                            ctx.reply(response[i][0], response[i][1]);
                     else
                         ctx.reply(response, preview);
                 })

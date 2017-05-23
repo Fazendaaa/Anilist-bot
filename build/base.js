@@ -339,12 +339,12 @@ const buttons = (db, user, id, type, button) => {
  * @returns Anime formated Telegram layout.
  */
 const getAnimeID = id => {
-    return Promise.resolve(_nani2.default.get(`anime/${id}`).then(data => replyAnime(data)).catch(error => {
+    return Promise.resolve(_nani2.default.get(`anime/${id}`).then(data => [replyAnime(data), animeButton(data.id)]).catch(error => {
         console.log('[Error] getAnimeID nani:', error);
-        return '*Anime not found.*';
+        return ['*Anime not found.*', { parse_mode: 'Markdown' }];
     })).catch(error => {
         console.log('[Error] getAnimeID Promise:', error);
-        return '*Anime not found.*';
+        return ['*Anime not found.*', { parse_mode: 'Markdown' }];
     });
 };
 

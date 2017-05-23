@@ -28,6 +28,7 @@ const cmdMessage = "\
 
 const watchMessage = '\n*For more info about your animes:*\n\
 */watchlist* _index_\n\
+Exemple: _/watchlist 0_\n\
 or\n\
 */watchlist* _index1, index2, index3, ..._\n\
 \n*If you want to remove any anime from your watchlist just type:*\n\
