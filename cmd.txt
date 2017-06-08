@@ -4,3 +4,4 @@ character - Search characters
 staff - Search staff
 studio - Search studios
 menu - See all about this bot
+source - More info about this bot
