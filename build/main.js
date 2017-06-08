@@ -35,7 +35,7 @@ bot.command('start', ctx => ctx.reply(_utils.welcome, { parse_mode: 'Markdown' }
 
 bot.command('help', ctx => ctx.reply(_utils.help, { parse_mode: 'Markdown' }));
 
-bot.command('source', ctx => ctx.reply(_utils.source, { parse_mode: 'Markdown' }));
+bot.command('source', ctx => ctx.reply(_utils.source, { parse_mode: 'Markdown', disable_web_page_preview: true }));
 
 bot.command('notifications', ctx => {
     db.toggleNotifications(ctx.message.from.id).then(data => {

@@ -52,10 +52,9 @@ If you want to disable or enable specifc animes, open it watchlist and reply wit
 If you want to help me out or just see more about my work or this bot: /source\n\n\
 Any bugs or suggestions, talk to: @Farmy`;
 
-// The first bracket is an robot emoji
-const source = '🤖 [Github](https://github.com/Fazendaaa/Anilist-bot)\n\
-😀 [My website](http://fazendaaa.me)\n\
-🤓 [Patreon](https://www.patreon.com/Fazenda)';
+const source = '🤖 [Github](https://github.com/Fazendaaa/Anilist-bot) — See the code behind this bot\n\
+😀 [My website](http://fazendaaa.me) — Check it out some of my other works\n\
+🤓 [Patreon](https://www.patreon.com/Fazenda) — Helps me mantain this bot';
 
 const notQuery = '*Could not query the data*';
 const notRm = '*Could remove your data. Please, try it later.*';
@@ -144,7 +143,7 @@ module.exports = {
   serverError: serverError,
   empty: empty,
   line: line,
-  github: github,
+  source: source,
   removeCmd: removeCmd,
   messageToString: messageToString,
   parseToInt: parseToInt,
