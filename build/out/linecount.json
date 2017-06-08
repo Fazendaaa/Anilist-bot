@@ -1,0 +1,77 @@
+{
+    "extension": "linecount",
+    "version": "0.1.7",
+    "workspace": "/home/farm/Documents/Anilist-bot/src",
+    "linecount": [
+        {
+            "version": "0.1.7",
+            "counttime": "2017-06-07 22:38:49",
+            "filesum": 10,
+            "codesum": 2044,
+            "commentsum": 951,
+            "blanksum": 333,
+            "filelist": [
+                {
+                    "blank": 53,
+                    "code": 556,
+                    "comment": 182,
+                    "filename": "bot.js"
+                },
+                {
+                    "blank": 32,
+                    "code": 210,
+                    "comment": 125,
+                    "filename": "database.js"
+                },
+                {
+                    "blank": 29,
+                    "code": 252,
+                    "comment": 71,
+                    "filename": "keyboard.js"
+                },
+                {
+                    "blank": 29,
+                    "code": 123,
+                    "comment": 2,
+                    "filename": "main.js"
+                },
+                {
+                    "blank": 21,
+                    "code": 168,
+                    "comment": 58,
+                    "filename": "model.js"
+                },
+                {
+                    "blank": 63,
+                    "code": 389,
+                    "comment": 163,
+                    "filename": "reply.js"
+                },
+                {
+                    "blank": 47,
+                    "code": 164,
+                    "comment": 165,
+                    "filename": "search.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 3,
+                    "comment": 21,
+                    "filename": "test.js"
+                },
+                {
+                    "blank": 20,
+                    "code": 95,
+                    "comment": 30,
+                    "filename": "utils.js"
+                },
+                {
+                    "blank": 36,
+                    "code": 84,
+                    "comment": 134,
+                    "filename": "verify.js"
+                }
+            ]
+        }
+    ]
+}

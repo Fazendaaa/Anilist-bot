@@ -1,66 +1,81 @@
 'use strict';
 
-import moment from 'moment';
+import dotenv from 'dotenv';
+
+import {
+    Markup,
+    Extra,
+    Telegram
+} from 'telegraf';
+
+dotenv.config();
+
+const telegram = new Telegram(process.env.BOT_TOKEN, {
+  agent: null,
+  webhookReply: true
+});
 
 /***********************************************************************************************************************
  *********************************************** GLOBAL VARIABLES ******************************************************
  **********************************************************************************************************************/
 
-const welcome = "Welcome to _ANILISTbot_. The *UNOFFICIAL* application for searches in Anilist.\n\nType:\n/help";
+const line = '——————';
 
-const help = "Usage:\n\n\
-*Inline mode: This bot can help you find what you want search. It works automatically, no need to add it anywhere. Simply open any of your chats and type @ANILISTbot something in the message field. Then tap on a result to send.*\n\n\
-For example, try it typing:\n\
-@ANILISTbot _'Pokemon'_\n\n\
-To see it more options: /cmd\n\n\
-Any bugs or suggestions, talk to: @Farmy";
+const help = "Wanna find _animes, mangas, characters, staff_ or _studios_? Try it using @AnilistBot in any of your chats, \
+just type in the message field what you want!\n\n\
+Try an exemple:\n\
+@ANILISTbot 'Pokemon'\n\n\
+This bot has special features for you:\n\
+*- notifications when new episodes releases*\n\
+*- your own watchlist and readlist*\n\n\
+Any questions? Type /menu and see the guide info for more informations.";
 
-const cmdMessage = "\
+const welcome = `*Welcome to the unofficial application for ANILIST.*\n\n${help}`;
+
+const menu = `${line} MENU ${line}\n\n*User:* _info about all notifications_\n*Watchlist:* _saved animes_\n*Readlist:* _saved mangas_\n\nOther commands in guide.`;
+
+const cmdMessage = `\
+${line} GUIDE ${line}\n\n\
+*Search features:*\n\n\
+@ANILISTbot _'Search...'_\n\n\
 /anime _'anime name'_\n\
+/manga _'manga name'_\n\
 /character _'character name'_\n\
 /staff _'staff name'_\n\
-/studio _'studio name'_\n\
-/watchlist ― see your saved anime list\n\
-/watchlist _'index'_ ― see data about your saved anime\n\
-/rm _'index'_ ― remove from your watchlist\n\
-/rm _'index1', 'index2', 'index3', ..._ ― remove from your watchlist\n\
-/source ― see the code behind ANILISTbot";
+/studio _'studio name'_\n\n\
+*Watchlist/Readlist:*\n\n\
+To see more info about your anime/manga just reply the list with the desired content index or indexes -- _like in: 0, 1, 2_\n\n\
+*Notifications:*\n\n\
+Notifications are enabled for all airing animes by default. If you want to disable it: /notifications\n\
+If you want to disable or enable specifc animes, open it watchlist and reply with the animes index that you want to toggle notifications.\n\n\
+*ANILISTbot:*\n\n\
+If you want to help me out or just see more about my work or this bot: /source\n\n\
+Any bugs or suggestions, talk to: @Farmy`;
 
-const watchMessage = '\n*For more info about your animes:*\n\
-*/watchlist* _index_\n\
-Exemple: _/watchlist 0_\n\
-or\n\
-*/watchlist* _index1, index2, index3, ..._\n\
-\n*If you want to remove any anime from your watchlist just type:*\n\
-*/rm* _index_\n\
-or\n\
-*/rm* _index1, index2, index3, ..._\n';
+const source = '🤖 [Github](https://github.com/Fazendaaa/Anilist-bot) — See the code behind this bot\n\
+😀 [My website](http://fazendaaa.me) — Check it out some of my other works\n\
+🤓 [Patreon](https://www.patreon.com/Fazenda) — Helps me mantain this bot';
 
-const notAnime = '*Anime not found: do it again, please.*';
-const notCharacter = '*Character not found: do it again, please.*';
-const notStaff = '*Staff not found: do it again, please.*';
-const notStudio = '*Studio not found: do it again, please.*';
-const notQuery = '*Could not query your data. Please, try it later.*';
+const notQuery = '*Could not query the data*';
 const notRm = '*Could remove your data. Please, try it later.*';
 const defaultResponse = 'Please, feel free to search Anilist.';
-const messageSearch = 'Search for animes, character, staff and studios.';
-const addedWL = 'Added to your watchlist!\nTo see it just open a chat with ANILISTbot and type /watchlist';
+const searchText= 'Search for animes, character, staff and studios.';
 const invalid = '*Invalid anime positon. Please send anime index that you want to remove.*';
 const serverError = '*Seems like our database has some issues. Please contact @Farmy about that. Or try again later*';
 const empty = '*Your watchlist is empty*';
 const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/logo_al.png';
 
-const search = {
-                    id: '1',
-                    title: 'Search for anything',
-                    type: 'article',
-                    input_message_content: {
-                        message_text: messageSearch,
-                        parse_mode: 'Markdown'
-                    },
-                    description: messageSearch,
-                    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/search.jpg'
-                }
+const searchMessage = {
+                            id: '1',
+                            title: 'Search for anything',
+                            type: 'article',
+                            input_message_content: {
+                                message_text: searchText,
+                                parse_mode: 'Markdown'
+                            },
+                            description: searchText,
+                            thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/search.jpg'
+                        };
 const notFound = {
                     id: '0',
                     title: 'Not Found',
@@ -71,132 +86,7 @@ const notFound = {
                     },
                     description: 'Content not found',
                     thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/error.jpg'
-                }
-
-/***********************************************************************************************************************
- *********************************************** VERIFY FUNCTIONS ******************************************************
- **********************************************************************************************************************/
-
-/**
- * Returns data if it is available or error message when not.
- * @param {any} data - any data that must be verified wether or not is available.
- * @returns {any|string} Original content or error message.
- */
-const verifyData = data => (undefined != data && null != data && isNaN(data)) ? data : 'Not available';
-
-/**
- * Returns data if it is available or error message when not.
- * @param {number} data - any data that must be verified wether or not is available.
- * @returns {number|string} Original content or error message.
- */
-const verifyNumber = data => (undefined != data && null != data && 'number' === typeof data) ? data : 'Not available';
-
-/**
- * Verify if string is available or not.
- * @param {string} data - String to be verified.
- * @returns {string} Original string or error message.
- */
-const verifyString = data => ('Not available' != verifyData(data) && 'string' === typeof data) ? data : 'Not available';
-
-/**
- * Verify if data is a string or a number and wheter is available or not.
- * @param {string|number} data - String to be verified.
- * @returns {string} Original string or error message.
- */
-const verifyStringNumber = data => ('Not available' != verifyString(data) || 'Not available' != verifyNumber(data)) ? data : 'Not available';
-
-/**
- * Verify if name is available or not.
- * @param {string} data - String to be verified.
- * @returns {string} Original string or nothing.
- */
-const verifyName = data => ('Not available' != verifyData(data) && 'string' === typeof data) ? data : '';
-
-/**
- * Verify if title is available or not.
- * @param {string} data - Title to be verified.
- * @returns {string} Original string parsed to title markdwon or error message.
- */
-const verifyTitle = data => ('Not available' != verifyString(data)) ? `*${data}*\n` : '';
-
-/**
- * Verify if japanese title is available or not.
- * @param {string} data - Title to be verified.
- * @returns {string} Original string parsed to title markdwon or error message.
- */
-const verifyJPTitle = data => ('Not available' != verifyString(data)) ? `🇯🇵 *${data}*\n` : '';
-/*  The double rectangles before data are the representative emoji for the japanese flag */
-
-/**
- * Verify if english title is available or not.
- * @param {string} data - Title to be verified.
- * @returns {string} Original string parsed to title markdwon or error message.
- */
-const verifyENTitle = data => ('Not available' != verifyString(data)) ? `🇬🇧 *${data}*\n` : '';
-/*  The double rectangles before data are the representative emoji for the british flag */
-
-/**
- * Verify if object is available or not
- * @param {Object[]} data - Object to be verified.
- * @returns {string} Object data parsed to string or error message.
- */
-const verifyObject = data => ('Not available' != verifyData(data) && 'object' === typeof data) ? data.map((value) => `> ${value}`).join('\n') : 'Not available';
-
-/**
- * Verify if data is available, parsing it to button standard.
- * @param {string} message - Message title.
- * @param {string|number} data - Message value.
- * @returns {string} Message parsed or nothing to be printed.
- */
-const verifyButton = (message, data) => ('Not available' != verifyStringNumber(data)) ? `> ${message}: ${data}\n` : '';
-
-/**
- * Verify if data is available, parsing it to message standard.
- * @param {string} message - Message title.
- * @param {string} data - Message value.
- * @returns {string} Message parsed or nothing to be printed.
- */
-const verifyMD = (message, data) => ('Not available' != verifyStringNumber(data)) ? `- _${message}_: *${data}*\n` : '';
-
-/**
- * Verify if YouTube link is available parsing it to trailer link.
- * @param {string} data - Youtube id.
- * @returns {string} Message parsed or nothing to be printed.
- */
-const verifyYT = data => ('Not available' != verifyString(data)) ? `🎥 [Trailer](https://youtu.be/${data})\n`: '';
-/*  The brackets before Trailer are the camera emoji    */
-
-/**
- * Verify if website link is available parsing it to trailer link.
- * @param {string} data - Website link.
- * @returns {string} Message parsed or nothing to be printed.
- */
-const verifyWS = data => ('Not available' != verifyString(data)) ? `[Website](${data}})`: '';
-
-/**
- * Parse it Anilist date format to one more readable
- * @param {string} message - Message title.
- * @param {string} data - Message value.
- * @returns {string} Message parsed or nothing to be printed.
- */
-const verifyDate = (message, data) => ('Not available' != verifyString(data)) ? `- _${message}_: *${moment(data).format('MMMM Do YYYY')}*\n` : '';
-
-/**
- * Verify if the given anime is rated as adult content.
- * @param {string} data - Anime flag.
- * @returns {string} Message parsed or nothing to be printed.
- */
-const verifyAdult = data => (data) ? '⚠️ *Rated as adult content*\n' : '';
-
-/**
- * Verify if the given string has an array of integers inside it.
- * @param {string} str - string to be parsed.
- * @returns an array of integers.
- */
-const verifyNumbers = str => {
-    const numbers = str.split(',');
-    return numbers.map(data => parseToInt(data)).filter(notNaN).sort();
-}
+                };
 
 /***********************************************************************************************************************
  *********************************************** OTHER FUNCTIONS *******************************************************
@@ -216,8 +106,7 @@ const removeCmd = ctx => ctx.message.text.replace(/(\/\w+)\s*/, '');
  */
 const messageToString = string => Buffer.from(string, 'ascii')
                                         .toString('ascii')
-                                        .replace(/(?:=\(|:0|:o|: o|: 0)/, ': o')
-                                        .replace(/<\w+>/g, '');
+                                        .replace(/(?:=\(|:0|:o|: o|: 0)/, ': o');
 
 /**
  * Verify if str is an Integer or not.
@@ -238,41 +127,27 @@ const notNaN = data => !isNaN(data);
  **********************************************************************************************************************/
 
 module.exports = {
+    dotenv,
+    telegram,
+    Extra,
+    Markup,
+    menu,
     welcome,
     help,
     defaultResponse,
-    messageSearch,
-    search,
+    searchMessage,
     cmdMessage,
     notFound,
-    notAnime,
-    notCharacter,
-    notStaff,
-    notStudio,
     notQuery,
     notRm,
     logo_al,
-    watchMessage,
-    addedWL,
     invalid,
     serverError,
     empty,
+    line,
+    source,
     removeCmd,
     messageToString,
-    verifyData,
-    verifyNumber,
-    verifyString,
-    verifyStringNumber,
-    verifyName,
-    verifyTitle,
-    verifyJPTitle,
-    verifyENTitle,
-    verifyObject,
-    verifyButton,
-    verifyMD,
-    verifyYT,
-    verifyWS,
-    verifyDate,
-    verifyAdult,
-    verifyNumbers
+    parseToInt,
+    notNaN
 }

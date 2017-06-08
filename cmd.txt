@@ -3,5 +3,4 @@ anime - Search animes
 character - Search characters
 staff - Search staff
 studio - Search studios
-watchlist - See your saved animes
-rm - Remove anime from your watchlist
+menu - See all about this bot

@@ -2,7 +2,7 @@
   "name": "anilist-bot",
   "version": "1.0.0",
   "description": "Telegram bot that searches data in Anilist",
-  "main": "build/bot.js",
+  "main": "build/main.js",
   "babel": {
     "presets": [
       "es2015-node5"
@@ -18,8 +18,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel -D ./src/ -d build",
-    "es6": "babel-node src/bot.js",
-    "bot": "node build/bot.js",
+    "es6": "babel-node src/main.js",
+    "bot": "node build/main.js",
     "db": "mongod --dbpath anilist_db",
     "start": "node build/bot.js"
   },
@@ -41,10 +41,14 @@
     "babel-preset-es2015-node5": "1.2.0",
     "dotenv": "4.0.0",
     "moment": "2.18.1",
+    "moment-timezone": "0.5.13",
     "mongodb": "2.2.26",
     "mongoose": "4.10.0",
     "nani": "1.2.0",
+    "node-schedule": "1.2.3",
     "polyfill": "0.1.0",
+    "remove-markdown": "0.1.0",
+    "striptags": "3.0.1",
     "telegraf": "3.6.10"
   },
   "devDependencies": {

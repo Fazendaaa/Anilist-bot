@@ -1,4 +1,5 @@
 .env
 /node_modules
 /anilist_db
+/src/test.js
 reddit.txt

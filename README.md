@@ -4,12 +4,19 @@
 
 This is a [Telgram](https://telegram.org) search bot in [Anilist](https://anilist.co) database. This is an UNOFFICIAL bot.
 
+## Deployment
+
+This bot is up and running in [Heroku](https://www.heroku.com/home)
+
 ## Built With
 
 * [Node-js](https://nodejs.org/en/) - Running application;
 * [Telegraf](https://github.com/telegraf/telegraf) - Telegram wrapper;
 * [nani](https://github.com/sotojuan/nani) - Anilist wrapper;
 * [dotenv](https://github.com/motdotla/dotenv) - Used to read enviroment variables;
+* [node-schedule](https://github.com/node-schedule/node-schedule) - Schedule notifications;
+* [mongoose](http://mongoosejs.com) - Bot's database;
+* [moment](https://momentjs.com) - Convert's time formats;
 * [Freepik](http://www.freepik.com/) - Images and logos.
 
 ## Contributing
@@ -34,4 +41,8 @@ Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy
 
 ## TODO
 
+* System to notify user about changes in the bot.
+* Show user order of next episode releases.
 * Integration with wit.ia
+* System to give user recomendations.
+* 'Like' system.
