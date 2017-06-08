@@ -27,12 +27,18 @@ Try an exemple:\n\
 @ANILISTbot 'Pokemon'\n\n\
 This bot has special features for you:\n\
 *- notifications when new episodes releases*\n\
+*- countdown for episodes*\n\
 *- your own watchlist and readlist*\n\n\
 Any questions? Type /menu and see the guide info for more informations.";
 
 const welcome = `*Welcome to the unofficial application for ANILIST.*\n\n${help}`;
 
-const menu = `${line} MENU ${line}\n\n*User:* _info about all notifications_\n*Watchlist:* _saved animes_\n*Readlist:* _saved mangas_\n\nOther commands in guide.`;
+const menu = `${line} MENU ${line}\n\n\
+*User:* _info about all notifications_\n\
+*Countdown:* _episodes time for ariring_\n\
+*Watchlist:* _saved animes_\n\
+*Readlist:* _saved mangas_\n\n\
+Other commands in guide.`;
 
 const cmdMessage = `\
 ${line} GUIDE ${line}\n\n\

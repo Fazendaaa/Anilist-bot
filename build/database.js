@@ -324,7 +324,7 @@ class DB {
         const type = true;
 
         // Run each half hour
-        const process = _nodeSchedule2.default.scheduleJob('30 * * * *', () => {
+        const process = _nodeSchedule2.default.scheduleJob('*/30 * * * *', () => {
             const serverTime = new Date(Date.now());
             console.log(`[${serverTime.toString()}] Running notifications...`);
 

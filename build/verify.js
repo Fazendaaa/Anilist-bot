@@ -14,6 +14,10 @@ var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _humanizeDuration = require('humanize-duration');
+
+var _humanizeDuration2 = _interopRequireDefault(_humanizeDuration);
+
 var _utils = require('./utils');
 
 var _reply = require('./reply');
@@ -201,11 +205,11 @@ const verifyWatchLink = data => {
 
 /**
  * Verify if the given anime is airing and shows it the next episode.
- * @param {Number} id - Anime id.
+ * @param {Number} data - Anime data.
  * @returns {String} Anime info about next episode.
  */
 const verifyNextEpisode = data => {
-  if (data.hasOwnProperty(data.airing)) return verifyMD('Next Episode', data.airing.next_episode);else return '';
+  if (data) return `${verifyMD('Next Episode', data.next_episode)}${verifyDate('New release in:', data.time)}`;else return '';
 };
 
 /**
@@ -214,6 +218,13 @@ const verifyNextEpisode = data => {
  * @returns {String} Character role seted.
  */
 const verifyRole = role => verifyData(role) != 'Not Available' ? ` - _Role_: ${role}` : '';
+
+/**
+ * Verify wheter or not countdown is available.
+ * @param {String} data - Anime coundown time in seconds.
+ * @returns {String} Formated data to be printed.
+ */
+const verifyCountdown = data => verifyData(data) != 'Not Available' ? ` - _Countdown_: *${(0, _humanizeDuration2.default)(data * 1000)}*` : '';
 
 /***********************************************************************************************************************
  **************************************************** EXPORTS **********************************************************
@@ -243,5 +254,6 @@ module.exports = {
   verifyChapters: verifyChapters,
   verifyVolumes: verifyVolumes,
   verifyRole: verifyRole,
-  verifyEmptyString: verifyEmptyString
+  verifyEmptyString: verifyEmptyString,
+  verifyCountdown: verifyCountdown
 };

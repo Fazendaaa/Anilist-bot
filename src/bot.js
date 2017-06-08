@@ -45,7 +45,8 @@ import {
     replyNotify,
     replyInline,
     replyAboutAnime,
-    replyAboutManga
+    replyAboutManga,
+    replyCountdown
 } from './reply';
 
 import {
@@ -60,7 +61,7 @@ import {
     mangaPage,
     animeID,
     mangaID,
-    getID
+    getID,
 } from './search';
 
 /***********************************************************************************************************************
@@ -70,7 +71,7 @@ import {
 /**
  * This function query all users that added given anime to watchlist then make a layout update of it.
  * @param {Number} anime - Anime id.
- * @param {Object[Number]} chats - Chats ids.
+ * @param {Object[JSON]} chats - Chats ids and its notifications status.
  * @returns Nothing, just sent the user a message.
  */
 const notifyRelease = (anime, chats) => {
@@ -79,6 +80,34 @@ const notifyRelease = (anime, chats) => {
         chats.forEach(chat => telegram.sendMessage(chat, reply.message, reply.keyboard));
     });
 }
+
+/**
+ * This function seeks all airing animes from user list and shows the order of it's episode releases.
+ * @param {Object[Number]} animes - Anislist Animes ID.
+ * @returns {Object[JSON]} Layout to be printed.
+ */
+const showCountdown = animes => new Promise((resolve, reject ) => {
+    Promise.all(animes.map(element => {
+        return animePage(element.content).then(response => {
+            if(response.airing)
+                return {response, notify: element.notify};
+            else
+                return undefined;
+        });
+    }))
+    // Remove all undefined values -- all not airing animes.
+    .then(data => data.filter(element => element))
+    // Sorts all releasing animes
+    .then(data => data.sort((key_1, key_2) => {
+        return key_1.response.airing.countdown - key_2.response.airing.countdown;
+    }))
+    .then(data => {
+        return data.map((element, index) => {
+            return `${line} ${index} ${line}\n`.concat(replyCountdown(element.response, element.notify));
+        })
+    }).then(data => `${line} COUNTDOWN ${line}\n`.concat(data.join('\n')))
+    .then(resolve).catch(reject);
+});
 
 /***********************************************************************************************************************
  *********************************************** FILTER FUNCTIONS ******************************************************
@@ -774,6 +803,14 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
                 }).catch(error => {throw error;});
                 resolve(loadingScreen);
             }).catch(error => console.log('[Error] buttons notify:', error));
+            break;
+        case 'countdown':
+            db.fetchAnimes(user).then(animes => {
+                showCountdown(animes).then(data => {
+                    telegram.editMessageText(chat, message, undefined, data, cmdKeyboard(user));
+                }).catch(error => {throw error;});
+            }).catch(error => console.log('[Error] buttons countdown:', error));
+            resolve(loadingScreen);
             break;
         default:
             resolve({message: 'Button error', visualization: true});

@@ -7,6 +7,8 @@ import removeMD from 'remove-markdown';
 
 import moment from 'moment';
 
+import humanizeDuration from 'humanize-duration';
+
 import {
     parseToInt,
     notNaN
@@ -204,12 +206,12 @@ const verifyWatchLink = data => {
 
 /**
  * Verify if the given anime is airing and shows it the next episode.
- * @param {Number} id - Anime id.
+ * @param {Number} data - Anime data.
  * @returns {String} Anime info about next episode.
  */
 const verifyNextEpisode = data => {
-    if(data.hasOwnProperty(data.airing))
-        return verifyMD('Next Episode', data.airing.next_episode);
+    if(data)
+        return `${verifyMD('Next Episode', data.next_episode)}${verifyDate('New release in:', data.time)}`;
     else
         return '';
 }
@@ -220,6 +222,13 @@ const verifyNextEpisode = data => {
  * @returns {String} Character role seted.
  */
 const verifyRole = role => (verifyData(role) != 'Not Available') ? ` - _Role_: ${role}` : '';
+
+/**
+ * Verify wheter or not countdown is available.
+ * @param {String} data - Anime coundown time in seconds.
+ * @returns {String} Formated data to be printed.
+ */
+const verifyCountdown = data => (verifyData(data) != 'Not Available') ? ` - _Countdown_: *${humanizeDuration(data*1000)}*` : '';
 
 /***********************************************************************************************************************
  **************************************************** EXPORTS **********************************************************
@@ -249,5 +258,6 @@ module.exports = {
     verifyChapters,
     verifyVolumes,
     verifyRole,
-    verifyEmptyString
+    verifyEmptyString,
+    verifyCountdown
 }

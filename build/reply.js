@@ -233,6 +233,7 @@ ${chapters}${popularity}${start}${end}`;
  * @returns {string} Message to be printed.
  */
 const replyAnimeWatchlist = data => {
+    // console.log(data);
     const japanese = (0, _verify.verifyJPTitle)(data.content.title_japanese);
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
@@ -245,7 +246,7 @@ const replyAnimeWatchlist = data => {
     const start = (0, _verify.verifyDate)('Start date', data.content.start_date);
     const end = (0, _verify.verifyDate)('End date', data.content.end_date);
     const notifications = (0, _verify.verifyMD)('Notifications', data.notify ? 'Enabled' : 'Disabled');
-    const next = (0, _verify.verifyNextEpisode)(data.content);
+    const next = (0, _verify.verifyNextEpisode)(data.content.airing);
     const watch = (0, _verify.verifyWatchLink)(data.content);
 
     return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}${episodes}\
@@ -546,6 +547,21 @@ const replyInline = (type, data) => {
     };
 };
 
+/**
+ * Sets into Telegram layout the countdown to airing animes.
+ * @param {JSON} data - Anilist data.
+ * @param {Boolean} notify - Wheter or not user wants to be notifed about that anime.
+ * @returns {JSON} Layout anime countdown.
+ */
+const replyCountdown = (data, notify) => {
+    const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
+    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const notifications = (0, _verify.verifyMD)('Notifications', notify ? 'Enabled' : 'Disabled');
+    const countdown = (0, _verify.verifyCountdown)(data.airing.countdown);
+
+    return `${japanese}${english}${notifications}${countdown}`;
+};
+
 /***********************************************************************************************************************
  **************************************************** EXPORTS **********************************************************
  **********************************************************************************************************************/
@@ -570,5 +586,6 @@ module.exports = {
     replyInline: replyInline,
     replyBrowse: replyBrowse,
     replyAboutAnime: replyAboutAnime,
-    replyAboutManga: replyAboutManga
+    replyAboutManga: replyAboutManga,
+    replyCountdown: replyCountdown
 };

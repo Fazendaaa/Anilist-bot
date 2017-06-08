@@ -1,7 +1,7 @@
 help - More info about how to use it
-anime - Search animes
-character - Search characters
-staff - Search staff
-studio - Search studios
+anime - Anime name
+character - Characters name
+staff - Staff name
+studio - Studio name
 menu - See all about this bot
 source - More info about this bot

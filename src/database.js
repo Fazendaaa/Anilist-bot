@@ -329,7 +329,7 @@ export default class DB {
         const type = true;
     
         // Run each half hour
-        const process = schedule.scheduleJob('30 * * * *', () => {
+        const process = schedule.scheduleJob('*/30 * * * *', () => {
             const serverTime = new Date(Date.now());
             console.log(`[${serverTime.toString()}] Running notifications...`);
 
