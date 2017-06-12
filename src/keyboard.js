@@ -9,6 +9,16 @@ import {
  **********************************************************************************************************************/
 
 /**
+ * Sets the start keyboard.
+ * @returns {Keyboar} Start keyboard.
+ */
+const startKeyboard = () => {
+    return Extra.markdown().markup(m =>
+        m.keyboard(['Menu', 'Help'])
+    )
+}
+
+/**
  * Sets the menu keyboard.
  * @param {Number} id - User id.
  * @returns {Keyboar} Bot keyboard.
@@ -41,9 +51,13 @@ const aboutKeyboard = id => {
  * @returns {Keyboar} Bot keyboard.
  */
 const cmdKeyboard = id => {
-    return Extra.markdown().markup(m => m.inlineKeyboard([
+    const keyboard = Extra.markdown().markup(m => m.inlineKeyboard([
         m.callbackButton('<', `menu/${id}`)
     ]));
+
+    keyboard.disable_web_page_preview = true;
+
+    return keyboard;
 }
 
 /**
@@ -340,6 +354,7 @@ const readlistKeyboard = (button, id) => {
  **********************************************************************************************************************/
 
 module.exports = {
+    startKeyboard,
     menuKeyboard,
     aboutKeyboard,
     cmdKeyboard,

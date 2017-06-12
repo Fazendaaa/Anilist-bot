@@ -25,7 +25,8 @@ import {
     verifyVolumes,
     verifyRole,
     verifyEmptyString,
-    verifyCountdown
+    verifyCountdown,
+    verifyType
 } from './verify';
 
 import {
@@ -65,7 +66,8 @@ const replyBrowseAnime = data => {
     const episodes = verifyEpisodes(data.total_episodes);
 
     /*  \u200B is the invisible emoji   */
-    return `[\u200B](${data.image_url_lge})${japanese}${english}${type}${score}${status}${episodes}${popularity}${start}${end}`;
+    return `[\u200B](${data.image_url_lge})${japanese}${english}${type}${score}${status}${episodes}${popularity}\
+${start}${end}`;
 }
 
 
@@ -160,7 +162,7 @@ const replyManga = data => {
     const english = verifyENTitle(data.title_english);
     const youtube = verifyYT(data.youtube_id);
     const adult = verifyAdult(data.adult);
-    const type = verifyMD(data.type, data.series_type);
+    const type = verifyType(data.type, data.series_type);
     const score = verifyScore(data.average_score);
     const status = verifyMD('Status', data.publishing_status);
     const volumes = verifyVolumes(data.total_volumes);
@@ -183,7 +185,7 @@ const replyAnime = data => {
     const english = verifyENTitle(data.title_english);
     const youtube = verifyYT(data.youtube_id);
     const adult = verifyAdult(data.adult);
-    const type = verifyMD(data.type, data.series_type);
+    const type = verifyType(data.type, data.series_type);
     const score = verifyScore(data.average_score);
     const status = verifyMD('Status', data.airing_status);
     const episodes = verifyEpisodes(data.total_episodes);
@@ -253,7 +255,7 @@ const replyMangaReadlist = data => {
     const english = verifyENTitle(data.content.title_english);
     const youtube = verifyYT(data.content.youtube_id);
     const adult = verifyAdult(data.content.adult);
-    const type = verifyMD(data.content.type, data.content.series_type);
+    const type = verifyType(data.content.type, data.content.series_type);
     const score = verifyScore(data.content.average_score);
     const status = verifyMD('Status', data.content.publishing_status);
     const volumes = verifyVolumes(data.content.total_volumes);
@@ -262,8 +264,8 @@ const replyMangaReadlist = data => {
     const start = verifyDate('Start date', data.content.start_date);
     const end = verifyDate('End date', data.content.end_date);
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}${volumes}\
-${chapters}${popularity}${start}${end}`;
+    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}\
+${volumes}${chapters}${popularity}${start}${end}`;
 }
 
 /**
@@ -277,7 +279,7 @@ const replyAnimeWatchlist = data => {
     const english = verifyENTitle(data.content.title_english);
     const youtube = verifyYT(data.content.youtube_id);
     const adult = verifyAdult(data.content.adult);
-    const type = verifyMD(data.content.type, data.content.series_type);
+    const type = verifyType(data.content.type, data.content.series_type);
     const score = verifyScore(data.content.average_score);
     const status = verifyMD('Status', data.content.airing_status);
     const episodes = verifyEpisodes(data.content.total_episodes);
@@ -288,8 +290,8 @@ const replyAnimeWatchlist = data => {
     const next = verifyNextEpisode(data.content.airing);
     const watch = verifyWatchLink(data.content);
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}${episodes}\
-${popularity}${start}${end}${notifications}${next}${watch}`;
+    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}\
+${episodes}${popularity}${start}${end}${notifications}${next}${watch}`;
 }
 
 /**
@@ -321,7 +323,7 @@ const replyAnimeHeader = data => {
     const english = verifyENTitle(data.content.title_english);
     const youtube = verifyYT(data.content.youtube_id);
     const adult = verifyAdult(data.content.adult);
-    const type = verifyMD(data.content.type, data.content.series_type);
+    const type = verifyType(data.content.type, data.content.series_type);
     const notifications = verifyMD('Notifications', (data.notify) ? 'Enabled' : 'Disabled');
 
     return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${notifications}`;
@@ -337,7 +339,7 @@ const replyMangaHeader = data => {
     const english = verifyENTitle(data.content.title_english);
     const youtube = verifyYT(data.content.youtube_id);
     const adult = verifyAdult(data.content.adult);
-    const type = verifyMD(data.content.type, data.content.series_type);
+    const type = verifyType(data.content.type, data.content.series_type);
 
     return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}`;
 }

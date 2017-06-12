@@ -31,7 +31,8 @@ import {
 
 export default class DB {
     constructor() {
-        const uristring = process.env.MONGODB_URI;
+        //const uristring = process.env.MONGODB_URI;
+        const uristring = 'mongodb://localhost';
         mongoose.connect(uristring);
         this.db = mongoose.connection;
         this.db.on('error', console.error.bind(console, 'connection error:'));
@@ -323,13 +324,14 @@ export default class DB {
      * releases.
      */
     runNotify() {
-        console.log('Notify starting up.');
-
         // Notify only animes for now only since mangas don't have this feature implemented yet.
         const type = true;
     
-        // Run each half hour
-        const process = schedule.scheduleJob('*/30 * * * *', () => {
+        console.log('Notify starting up.');
+
+        // Run  each 'half' hour -- since most of animes are released in hours like 12:00 or 12:30, if the schedule runs
+        // at times like 12:01 and !2:31, user's will be notified one minute later after release.
+        const process = schedule.scheduleJob('*/31 * * * *', () => {
             const serverTime = new Date(Date.now());
             console.log(`[${serverTime.toString()}] Running notifications...`);
 

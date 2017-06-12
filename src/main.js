@@ -13,7 +13,6 @@ import {
     removeCmd,
     messageToString,
     notQuery,
-    notRm
 } from './utils';
 
 import {
@@ -36,6 +35,7 @@ import {
 } from './bot';
 
 import {
+    startKeyboard,
     menuKeyboard
 } from './keyboard';
 
@@ -50,11 +50,7 @@ db.runNotify();
 bot.use(Telegraf.log());
 bot.use(Telegraf.memorySession());
 
-bot.command('menu', ctx => ctx.reply(menu, menuKeyboard(ctx.message.from.id)));
-
-bot.command('start', ctx => ctx.reply(welcome, {parse_mode:'Markdown'}));
-
-bot.command('help', ctx => ctx.reply(help, {parse_mode:'Markdown'}));
+bot.command('start', ctx => ctx.reply(`We welcome you, *${ctx.message.from.username}* `.concat(welcome), startKeyboard()));
 
 bot.command('source', ctx => ctx.reply(source, {parse_mode:'Markdown', disable_web_page_preview: true}));
 
@@ -138,6 +134,12 @@ bot.on('text', (ctx) => {
             ctx.reply('*Invalid reply message*', {parse_mode: 'Markdown'});
         }
     }
+
+    else if('Menu' == ctx.message.text)
+        ctx.reply(`Hello, again, *${ctx.message.from.username}*\n\n`.concat(menu), menuKeyboard(ctx.message.from.id));
+
+    else if('Help' == ctx.message.text)
+        ctx.reply(`How can I be helpful to you today, *${ctx.message.from.username}*?\n\n`.concat(help), {parse_mode:'Markdown'});
 })
 
 bot.on('inline_query', ctx => {

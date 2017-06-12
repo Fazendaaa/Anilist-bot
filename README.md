@@ -17,7 +17,7 @@ This bot is up and running in [Heroku](https://www.heroku.com/home)
 * [node-schedule](https://github.com/node-schedule/node-schedule) - Schedule notifications;
 * [mongoose](http://mongoosejs.com) - Bot's database;
 * [moment](https://momentjs.com) - Convert's time formats;
-* [Freepik](http://www.freepik.com/) - Images and logos.
+* [Humanize Duration](https://github.com/EvanHahn/HumanizeDuration.js) - Set countdown.
 
 ## Contributing
 
@@ -41,8 +41,8 @@ Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy
 
 ## TODO
 
-* System to notify user about changes in the bot.
-* Show user order of next episode releases.
-* Integration with wit.ia
-* System to give user recomendations.
+* System to give user option to set a time for be notified about updates;
+* Login with your Anilist account;
+* Integration with wit.ia;
+* System to give user recomendations;
 * 'Like' system.
