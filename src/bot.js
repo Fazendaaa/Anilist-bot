@@ -740,10 +740,10 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
 
                     switch(kind) {
                         case 'anime':
-                            text = "Added to your Watchlist!\nIf you don't want to be notified upon new episodes, open chat with ANILISTbot and see the guide in /menu.";
+                            text = "Added to your Watchlist!\nIf you don't want to be notified upon new episodes, open chat with ANILISTbot and see the guide in Menu.";
                             break;
                         case 'manga':
-                            text = 'Added to your Readlist!\nTo see it just open a chat with ANILISTbot and type /menu.';
+                            text = 'Added to your Readlist!\nTo see it just open a chat with ANILISTbot and press Menu.';
                             break;
                     }
 

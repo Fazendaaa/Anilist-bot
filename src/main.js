@@ -46,11 +46,26 @@ const parse = {
     disable_web_page_preview: true
 };
 
-db.runNotify();
+db.runNotify(); 
 bot.use(Telegraf.log());
 bot.use(Telegraf.memorySession());
 
-bot.command('start', ctx => ctx.reply(`We welcome you, *${ctx.message.from.username}* `.concat(welcome), startKeyboard()));
+bot.command('menu', ctx => {
+    ctx.reply('*This option is no longer available.*\nType: /start to update to a new version and use Keyboard only.', {parse_mode: 'Markdown'});
+});
+
+bot.command('help', ctx => {
+    ctx.reply('*This option is no longer available.*\nType: /start to update to a new version and use Keyboard only.', {parse_mode: 'Markdown'});
+});
+
+bot.command('start', ctx => {
+    // Only to bot's chat
+    if(ctx.message.from.id == ctx.message.chat.id)
+        ctx.reply(`We welcome you, *${ctx.message.from.username}* `.concat(welcome), startKeyboard());
+    // To user chats
+    else
+        ctx.reply('*This bot only works for searches in groups.*\nTo see more, chat with @ANILISTbot', {parse_mode: 'Markdown'});
+});
 
 bot.command('source', ctx => ctx.reply(source, {parse_mode:'Markdown', disable_web_page_preview: true}));
 
