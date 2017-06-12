@@ -69,7 +69,7 @@ const searchText= 'Search for animes, mangas, characteres, staff and studios.';
 const invalid = '*Invalid anime positon. Please send anime index that you want to remove.*';
 const serverError = '*Seems like our database has some issues. Please contact @Farmy about that. Or try again later*';
 const empty = '*Your watchlist is empty*';
-const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/logo_al.png';
+const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_error.jpg';
 
 const searchMessage = {
     id: '1',
@@ -80,7 +80,7 @@ const searchMessage = {
         parse_mode: 'Markdown'
     },
     description: searchText,
-    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/search.jpg'
+    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_search.jpg'
 };
 const notFound = {
     id: '0',
@@ -91,7 +91,7 @@ const notFound = {
         parse_mode: 'HTML'
     },
     description: 'Content not found',
-    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/error.jpg'
+    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_not_found.jpg'
 };
 
 /***********************************************************************************************************************

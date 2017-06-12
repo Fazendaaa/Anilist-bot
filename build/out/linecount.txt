@@ -20,3 +20,25 @@ test.js, code is 3, comment is 21, blank is 3.
 utils.js, code is 95, comment is 30, blank is 20.
 verify.js, code is 84, comment is 134, blank is 36.
 ===============================================================================
+===============================================================================
+EXTENSION NAME : linecount
+EXTENSION VERSION : 0.1.7
+-------------------------------------------------------------------------------
+count time : 2017-06-12 15:45:40
+count workspace : /home/farm/Documents/Anilist-bot/src
+total files : 10
+total code lines : 2162
+total comment lines : 983
+total blank lines : 351
+
+bot.js, code is 585, comment is 189, blank is 54.
+database.js, code is 210, comment is 126, blank is 32.
+keyboard.js, code is 261, comment is 76, blank is 32.
+main.js, code is 125, comment is 2, blank is 29.
+model.js, code is 168, comment is 58, blank is 21.
+reply.js, code is 400, comment is 170, blank is 65.
+search.js, code is 164, comment is 165, blank is 47.
+test.js, code is 60, comment is 22, blank is 12.
+utils.js, code is 100, comment is 30, blank is 20.
+verify.js, code is 89, comment is 145, blank is 39.
+===============================================================================

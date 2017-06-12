@@ -7,6 +7,14 @@ var _utils = require('./utils');
  **********************************************************************************************************************/
 
 /**
+ * Sets the start keyboard.
+ * @returns {Keyboar} Start keyboard.
+ */
+const startKeyboard = () => {
+    return _utils.Extra.markdown().markup(m => m.keyboard(['Menu', 'Help']));
+};
+
+/**
  * Sets the menu keyboard.
  * @param {Number} id - User id.
  * @returns {Keyboar} Bot keyboard.
@@ -32,7 +40,11 @@ const aboutKeyboard = id => {
  * @returns {Keyboar} Bot keyboard.
  */
 const cmdKeyboard = id => {
-    return _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `menu/${id}`)]));
+    const keyboard = _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `menu/${id}`)]));
+
+    keyboard.disable_web_page_preview = true;
+
+    return keyboard;
 };
 
 /**
@@ -197,6 +209,7 @@ const readlistKeyboard = (button, id) => {
  **********************************************************************************************************************/
 
 module.exports = {
+    startKeyboard: startKeyboard,
     menuKeyboard: menuKeyboard,
     aboutKeyboard: aboutKeyboard,
     cmdKeyboard: cmdKeyboard,

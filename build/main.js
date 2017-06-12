@@ -29,11 +29,7 @@ db.runNotify();
 bot.use(_telegraf2.default.log());
 bot.use(_telegraf2.default.memorySession());
 
-bot.command('menu', ctx => ctx.reply(_utils.menu, (0, _keyboard.menuKeyboard)(ctx.message.from.id)));
-
-bot.command('start', ctx => ctx.reply(_utils.welcome, { parse_mode: 'Markdown' }));
-
-bot.command('help', ctx => ctx.reply(_utils.help, { parse_mode: 'Markdown' }));
+bot.command('start', ctx => ctx.reply(`We welcome you, *${ctx.message.from.username}* `.concat(_utils.welcome), (0, _keyboard.startKeyboard)()));
 
 bot.command('source', ctx => ctx.reply(_utils.source, { parse_mode: 'Markdown', disable_web_page_preview: true }));
 
@@ -103,7 +99,7 @@ bot.on('text', ctx => {
         } catch (error) {
             ctx.reply('*Invalid reply message*', { parse_mode: 'Markdown' });
         }
-    }
+    } else if ('Menu' == ctx.message.text) ctx.reply(`Hello, again, *${ctx.message.from.username}*\n\n`.concat(_utils.menu), (0, _keyboard.menuKeyboard)(ctx.message.from.id));else if ('Help' == ctx.message.text) ctx.reply(`How can I be helpful to you today, *${ctx.message.from.username}*?\n\n`.concat(_utils.help), { parse_mode: 'Markdown' });
 });
 
 bot.on('inline_query', ctx => {

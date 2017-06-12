@@ -224,7 +224,15 @@ const verifyRole = role => verifyData(role) != 'Not Available' ? ` - _Role_: ${r
  * @param {String} data - Anime coundown time in seconds.
  * @returns {String} Formated data to be printed.
  */
-const verifyCountdown = data => verifyData(data) != 'Not Available' ? ` - _Countdown_: *${(0, _humanizeDuration2.default)(data * 1000)}*` : '';
+const verifyCountdown = data => verifyData(data) != 'Not Available' ? ` - _Countdown_: *${(0, _humanizeDuration2.default)(data * 1000, { units: ['d', 'h', 'm'], round: true })}*` : '';
+
+/**
+ * Verify wheter or not type is available.
+ * @param {String} value - Value of content.
+ * @param {String} type - Type of content.
+ * @returns {String} Formated data to be printed.
+ */
+const verifyType = (value, type) => verifyData(type) != 'Not Available' && verifyData(value) != 'Not Available' ? `📺 *${type}*(${value})\n` : '';
 
 /***********************************************************************************************************************
  **************************************************** EXPORTS **********************************************************
@@ -255,5 +263,6 @@ module.exports = {
   verifyVolumes: verifyVolumes,
   verifyRole: verifyRole,
   verifyEmptyString: verifyEmptyString,
-  verifyCountdown: verifyCountdown
+  verifyCountdown: verifyCountdown,
+  verifyType: verifyType
 };

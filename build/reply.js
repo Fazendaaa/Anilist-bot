@@ -27,7 +27,8 @@ const replyBrowseAnime = data => {
     const episodes = (0, _verify.verifyEpisodes)(data.total_episodes);
 
     /*  \u200B is the invisible emoji   */
-    return `[\u200B](${data.image_url_lge})${japanese}${english}${type}${score}${status}${episodes}${popularity}${start}${end}`;
+    return `[\u200B](${data.image_url_lge})${japanese}${english}${type}${score}${status}${episodes}${popularity}\
+${start}${end}`;
 };
 
 /**
@@ -121,7 +122,7 @@ const replyManga = data => {
     const english = (0, _verify.verifyENTitle)(data.title_english);
     const youtube = (0, _verify.verifyYT)(data.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.adult);
-    const type = (0, _verify.verifyMD)(data.type, data.series_type);
+    const type = (0, _verify.verifyType)(data.type, data.series_type);
     const score = (0, _verify.verifyScore)(data.average_score);
     const status = (0, _verify.verifyMD)('Status', data.publishing_status);
     const volumes = (0, _verify.verifyVolumes)(data.total_volumes);
@@ -144,7 +145,7 @@ const replyAnime = data => {
     const english = (0, _verify.verifyENTitle)(data.title_english);
     const youtube = (0, _verify.verifyYT)(data.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.adult);
-    const type = (0, _verify.verifyMD)(data.type, data.series_type);
+    const type = (0, _verify.verifyType)(data.type, data.series_type);
     const score = (0, _verify.verifyScore)(data.average_score);
     const status = (0, _verify.verifyMD)('Status', data.airing_status);
     const episodes = (0, _verify.verifyEpisodes)(data.total_episodes);
@@ -214,7 +215,7 @@ const replyMangaReadlist = data => {
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyMD)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
     const score = (0, _verify.verifyScore)(data.content.average_score);
     const status = (0, _verify.verifyMD)('Status', data.content.publishing_status);
     const volumes = (0, _verify.verifyVolumes)(data.content.total_volumes);
@@ -223,8 +224,8 @@ const replyMangaReadlist = data => {
     const start = (0, _verify.verifyDate)('Start date', data.content.start_date);
     const end = (0, _verify.verifyDate)('End date', data.content.end_date);
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}${volumes}\
-${chapters}${popularity}${start}${end}`;
+    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}\
+${volumes}${chapters}${popularity}${start}${end}`;
 };
 
 /**
@@ -238,7 +239,7 @@ const replyAnimeWatchlist = data => {
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyMD)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
     const score = (0, _verify.verifyScore)(data.content.average_score);
     const status = (0, _verify.verifyMD)('Status', data.content.airing_status);
     const episodes = (0, _verify.verifyEpisodes)(data.content.total_episodes);
@@ -249,8 +250,8 @@ const replyAnimeWatchlist = data => {
     const next = (0, _verify.verifyNextEpisode)(data.content.airing);
     const watch = (0, _verify.verifyWatchLink)(data.content);
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}${episodes}\
-${popularity}${start}${end}${notifications}${next}${watch}`;
+    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}\
+${episodes}${popularity}${start}${end}${notifications}${next}${watch}`;
 };
 
 /**
@@ -282,7 +283,7 @@ const replyAnimeHeader = data => {
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyMD)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
     const notifications = (0, _verify.verifyMD)('Notifications', data.notify ? 'Enabled' : 'Disabled');
 
     return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${notifications}`;
@@ -298,7 +299,7 @@ const replyMangaHeader = data => {
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyMD)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
 
     return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}`;
 };
