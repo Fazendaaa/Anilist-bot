@@ -1,6 +1,6 @@
 # ANILIST bot
 
-<img src="https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/logo.png" alt="Anilist-bot logo" align="right" />
+<img src="https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/PNG/circled_logo.png" alt="Anilist-bot logo" align="right" />
 
 This is a [Telgram](https://telegram.org) search bot in [Anilist](https://anilist.co) database. This is an UNOFFICIAL bot.
 
