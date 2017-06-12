@@ -131,30 +131,33 @@ bot.action(/.+/, ctx => {
 bot.on('text', (ctx) => {
     const user = ctx.message.from.id;
 
-    // Verify if the user replied a message sent from the bot.
-    if(ctx.message.hasOwnProperty('reply_to_message') && ctx.message.reply_to_message.from.id == process.env.BOT_ID) {
-        // Just verify wheter user replied to a valide message.
-        try {
-            const lines = ctx.message.reply_to_message.text.split('\n');
-            list(db, {user, index: ctx.message.text, header: lines[0].split(' ')[1], kind: lines[1].split(' ')[1]}).then(response => {
-                response.forEach(element => {
-                    ctx.reply(element.message, element.keyboard);
+    // Only to bot's chat
+    if(ctx.message.from.id == ctx.message.chat.id) {
+        // Verify if the user replied a message sent from the bot.
+        if(ctx.message.hasOwnProperty('reply_to_message') && ctx.message.reply_to_message.from.id == process.env.BOT_ID) {
+            // Just verify wheter user replied to a valide message.
+            try {
+                const lines = ctx.message.reply_to_message.text.split('\n');
+                list(db, {user, index: ctx.message.text, header: lines[0].split(' ')[1], kind: lines[1].split(' ')[1]}).then(response => {
+                    response.forEach(element => {
+                        ctx.reply(element.message, element.keyboard);
+                    });
+                }).catch(error => {
+                    console.log('[Error] text reply:', error);
+                    ctx.reply(notQuery, {parse_mode:'Markdown'});
                 });
-            }).catch(error => {
-                console.log('[Error] text reply:', error);
-                ctx.reply(notQuery, {parse_mode:'Markdown'});
-            });
+            }
+            catch(error) {
+                ctx.reply('*Invalid reply message*', {parse_mode: 'Markdown'});
+            }
         }
-        catch(error) {
-            ctx.reply('*Invalid reply message*', {parse_mode: 'Markdown'});
-        }
+
+        else if('Menu' == ctx.message.text)
+            ctx.reply(`Hello, again, *${ctx.message.from.username}*\n\n`.concat(menu), menuKeyboard(ctx.message.from.id));
+
+        else if('Help' == ctx.message.text)
+            ctx.reply(`How can I be helpful to you today, *${ctx.message.from.username}*?\n\n`.concat(help), {parse_mode:'Markdown'});
     }
-
-    else if('Menu' == ctx.message.text)
-        ctx.reply(`Hello, again, *${ctx.message.from.username}*\n\n`.concat(menu), menuKeyboard(ctx.message.from.id));
-
-    else if('Help' == ctx.message.text)
-        ctx.reply(`How can I be helpful to you today, *${ctx.message.from.username}*?\n\n`.concat(help), {parse_mode:'Markdown'});
 })
 
 bot.on('inline_query', ctx => {
