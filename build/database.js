@@ -20,8 +20,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 class DB {
     constructor() {
-        //const uristring = process.env.MONGODB_URI;
-        const uristring = 'mongodb://localhost';
+        const uristring = process.env.MONGODB_URI;
         _model.mongoose.connect(uristring);
         this.db = _model.mongoose.connection;
         this.db.on('error', console.error.bind(console, 'connection error:'));

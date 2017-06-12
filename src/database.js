@@ -31,8 +31,7 @@ import {
 
 export default class DB {
     constructor() {
-        //const uristring = process.env.MONGODB_URI;
-        const uristring = 'mongodb://localhost';
+        const uristring = process.env.MONGODB_URI;
         mongoose.connect(uristring);
         this.db = mongoose.connection;
         this.db.on('error', console.error.bind(console, 'connection error:'));
