@@ -11,7 +11,7 @@ var _utils = require('./utils');
  * @returns {Keyboar} Start keyboard.
  */
 const startKeyboard = () => {
-    return _utils.Extra.markdown().markup(m => m.keyboard(['Menu', 'Help']));
+    return _utils.Extra.markdown().markup(m => m.resize().keyboard(['Menu', 'Help']));
 };
 
 /**
@@ -26,26 +26,130 @@ const menuKeyboard = id => {
 };
 
 /**
- * Sets the about keyboard.
+ * Sets the user keyboard.
  * @param {Number} id - User id.
  * @returns {Keyboar} Bot keyboard.
  */
-const aboutKeyboard = id => {
-    return _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `menu/${id}`)]));
+const userKeyboard = id => {
+    return _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `menu/${id}`), m.callbackButton('Notify', `user/${id}/notification`), m.callbackButton('Time', `time/${id}/all`)]));
 };
 
 /**
- * Sets the cmd keyboard.
+ * Sets the time keyboard.
+ * @param {Number} id - User id.
+ * @param {Number} tz - Timezone id.
+ * @returns {Keyboar} Bot keyboard.
+ */
+const timeKeyboard = (id, tz) => {
+    return _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('6h am', `time/${id}/06/${tz}`), m.callbackButton('Noon', `time/${id}/12/${tz}`), m.callbackButton('6h pm', `time/${id}/18/${tz}`), m.callbackButton('Midnight', `time/${id}/00/${tz}`), m.callbackButton('Remove', `time/${id}/remove`)]));
+};
+
+/**
+ * Sets the location keyboard.
  * @param {Number} id - User id.
  * @returns {Keyboar} Bot keyboard.
  */
-const cmdKeyboard = id => {
-    const keyboard = _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `menu/${id}`)]));
+const locationKeyboard = id => {
+    return _utils.Extra.markup(m => {
+        return m.resize().keyboard([m.locationRequestButton('Send location'), 'Search it', 'Menu']);
+    });
+};
+
+/**
+ * Sets the update time keyboard.
+ * @param {Number} id - User id.
+ * @returns {Keyboar} Bot keyboard.
+ */
+const updateTimeKeyboard = id => {
+    return _utils.Extra.markup(m => {
+        return m.resize().keyboard(['Change time for notifications', 'Update location']);
+    });
+};
+
+/**
+ * Case user searches returns it more than one city, verify wich one given province.
+ * @param {Number} user - User's id.
+ * @param {Object[JSON]} cities - Cities that matches user search.
+ * @returns {Keyboar} Message keyboard.
+ */
+const citiesKeyboard = (user, cities) => {
+    return _utils.Extra.markdown().markup(m => m.inlineKeyboard(cities.map(city => [m.callbackButton(`${city.province}`, `timezone/${user}/${city.timezone}`)])));
+};
+
+/**
+ * Sets the guide keyboard.
+ * @param {Number} id - User id.
+ * @returns {Keyboar} Guide keyboard.
+ */
+const guideKeyboard = id => {
+    const keyboard = _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `menu/${id}`), m.callbackButton('About', `about/${id}`)]));
 
     keyboard.disable_web_page_preview = true;
 
     return keyboard;
 };
+
+/**
+ * Sets the countdown keyboard.
+ * @param {Number} id - User id.
+ * @returns {Keyboard} Countdown keyboard.
+ */
+const countdownKeyboard = id => {
+    return _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `menu/${id}`)]));
+};
+
+/**
+ * Sets the about keyboard.
+ * @param {Number} id - User id.
+ * @returns {Keyboard} Message keyboard.
+ */
+const aboutKeyboard = id => {
+    const keyboard = _utils.Extra.markdown().markup(m => m.inlineKeyboard([m.callbackButton('<', `guide/${id}`)]));
+
+    keyboard.disable_web_page_preview = true;
+
+    return keyboard;
+};
+
+/**
+ * In watchlist this is the keyboard to attached when user requires more info.
+ * @param {String} type - wich list is invoking.
+ * @param {Number} id - User's id.
+ * @param {Object[JSON]} content - Content data.
+ * @returns Keyboard to be attached to message.
+ */
+const moreKeyboard = (type, id, content) => {
+    let keyboard = [];
+
+    if (0 < content.length) {
+        content.forEach(one => {
+            keyboard.push([_utils.Markup.callbackButton(`${one.title_english}`, `more/${one.id}/${type}`)]);
+        });
+
+        keyboard = _utils.Extra.markdown().markup(m => m.inlineKeyboard(keyboard));
+    }
+
+    // Case user selected an empty tab.
+    else keyboard = undefined;
+
+    return keyboard;
+};
+
+/**
+ * This function returns all animes from users's watchlist in button format.
+ * @param {Number} id - User's ID.
+ * @param {Object[JSON]} animes - Anime's data.
+ * @returns {Object[JSON]} Keboard containg animes.
+ */
+const moreAnimeKeyboard = (id, animes) => moreKeyboard('anime', id, animes);
+
+/**
+ * This function returns all mangas from users's readlist in button format.
+ * @param {Number} id - User's ID.
+ * @param {Object[JSON]} mangas - Manga's data.
+ * @returns {Object[JSON]} Keboard containg mangas.
+ */
+const moreMangaKeyboard = (id, mangas) => moreKeyboard('manga', id, mangas);
 
 /**
  * This function allow the buttons search for the given id character.
@@ -167,6 +271,7 @@ const watchlistKeyboard = (button, id) => {
             break;
     }
 
+    keyboard.reply_markup.inline_keyboard.push([_utils.Markup.callbackButton('More info', `watchlist/${id}/more/${button}`)]);
     keyboard.disable_web_page_preview = true;
 
     return keyboard;
@@ -199,6 +304,7 @@ const readlistKeyboard = (button, id) => {
             break;
     }
 
+    keyboard.reply_markup.inline_keyboard.push([_utils.Markup.callbackButton('More info', `readlist/${id}/more/${button}`)]);
     keyboard.disable_web_page_preview = true;
 
     return keyboard;
@@ -211,8 +317,16 @@ const readlistKeyboard = (button, id) => {
 module.exports = {
     startKeyboard: startKeyboard,
     menuKeyboard: menuKeyboard,
+    userKeyboard: userKeyboard,
+    timeKeyboard: timeKeyboard,
+    locationKeyboard: locationKeyboard,
+    citiesKeyboard: citiesKeyboard,
+    updateTimeKeyboard: updateTimeKeyboard,
+    guideKeyboard: guideKeyboard,
+    countdownKeyboard: countdownKeyboard,
+    moreAnimeKeyboard: moreAnimeKeyboard,
+    moreMangaKeyboard: moreMangaKeyboard,
     aboutKeyboard: aboutKeyboard,
-    cmdKeyboard: cmdKeyboard,
     mangaKeyboardSearch: mangaKeyboardSearch,
     animeKeyboardSearch: animeKeyboardSearch,
     characterKeyboard: characterKeyboard,

@@ -18,7 +18,7 @@ var _utils = require('./utils');
 const replyBrowseAnime = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
     const english = (0, _verify.verifyENTitle)(data.title_english);
-    const type = (0, _verify.verifyMD)(data.series_type, data.type);
+    const type = (0, _verify.verifyTypeAnime)(data.series_type, data.type);
     const start = (0, _verify.verifyDate)('Start date', data.start_date);
     const end = (0, _verify.verifyDate)('End date', data.end_date);
     const status = (0, _verify.verifyMD)('Status', data.airing_status);
@@ -39,7 +39,7 @@ ${start}${end}`;
 const replyBrowseManga = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
     const english = (0, _verify.verifyENTitle)(data.title_english);
-    const type = (0, _verify.verifyMD)(data.series_type, data.type);
+    const type = (0, _verify.verifyTypeManga)(data.series_type, data.type);
     const start = (0, _verify.verifyDate)('Start date', data.start_date);
     const end = (0, _verify.verifyDate)('End date', data.end_date);
     const status = (0, _verify.verifyMD)('Status', data.publishing_status);
@@ -122,7 +122,7 @@ const replyManga = data => {
     const english = (0, _verify.verifyENTitle)(data.title_english);
     const youtube = (0, _verify.verifyYT)(data.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.adult);
-    const type = (0, _verify.verifyType)(data.type, data.series_type);
+    const type = (0, _verify.verifyTypeManga)(data.type, data.series_type);
     const score = (0, _verify.verifyScore)(data.average_score);
     const status = (0, _verify.verifyMD)('Status', data.publishing_status);
     const volumes = (0, _verify.verifyVolumes)(data.total_volumes);
@@ -145,7 +145,7 @@ const replyAnime = data => {
     const english = (0, _verify.verifyENTitle)(data.title_english);
     const youtube = (0, _verify.verifyYT)(data.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.adult);
-    const type = (0, _verify.verifyType)(data.type, data.series_type);
+    const type = (0, _verify.verifyTypeAnime)(data.type, data.series_type);
     const score = (0, _verify.verifyScore)(data.average_score);
     const status = (0, _verify.verifyMD)('Status', data.airing_status);
     const episodes = (0, _verify.verifyEpisodes)(data.total_episodes);
@@ -215,7 +215,7 @@ const replyMangaReadlist = data => {
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyTypeManga)(data.content.type, data.content.series_type);
     const score = (0, _verify.verifyScore)(data.content.average_score);
     const status = (0, _verify.verifyMD)('Status', data.content.publishing_status);
     const volumes = (0, _verify.verifyVolumes)(data.content.total_volumes);
@@ -234,12 +234,11 @@ ${volumes}${chapters}${popularity}${start}${end}`;
  * @returns {string} Message to be printed.
  */
 const replyAnimeWatchlist = data => {
-    // console.log(data);
     const japanese = (0, _verify.verifyJPTitle)(data.content.title_japanese);
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyTypeAnime)(data.content.type, data.content.series_type);
     const score = (0, _verify.verifyScore)(data.content.average_score);
     const status = (0, _verify.verifyMD)('Status', data.content.airing_status);
     const episodes = (0, _verify.verifyEpisodes)(data.content.total_episodes);
@@ -256,17 +255,14 @@ ${episodes}${popularity}${start}${end}${notifications}${next}${watch}`;
 
 /**
  * Put in a preview layout about the user list data.
- * @param {Number} index - Postion of anime in list.
  * @param {Number} data - Contet.
  * @returns List preview info.
  */
-const replyList = (index, data) => {
+const replyList = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
     const english = (0, _verify.verifyENTitle)(data.title_english);
-    const youtube = (0, _verify.verifyYT)(data.youtube_id);
-    const adult = (0, _verify.verifyAdult)(data.adult);
 
-    return `${_utils.line}\t${index}\t${_utils.line}\n${japanese}${english}${youtube}${adult}`;
+    return `${japanese}${english}`;
 };
 
 /***********************************************************************************************************************
@@ -283,7 +279,7 @@ const replyAnimeHeader = data => {
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyTypeAnime)(data.content.type, data.content.series_type);
     const notifications = (0, _verify.verifyMD)('Notifications', data.notify ? 'Enabled' : 'Disabled');
 
     return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${notifications}`;
@@ -299,9 +295,34 @@ const replyMangaHeader = data => {
     const english = (0, _verify.verifyENTitle)(data.content.title_english);
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
-    const type = (0, _verify.verifyType)(data.content.type, data.content.series_type);
+    const type = (0, _verify.verifyTypeManga)(data.content.type, data.content.series_type);
 
     return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}`;
+};
+
+/**
+ * Set the notify header for anime.
+ * @param {JSON} data - Anilist data
+ * @returns {String} Message to be printed.
+ */
+const replyNotifyAnimeHeader = data => {
+    // Case  the  last episode is released the data.airing option will not be available anymore, that said mean that the
+    // last episode is released.
+    const airing = data.airing ? data.airing.next_episode - 1 : episodes;
+
+    return `${_utils.line} NEW EPISODE - ${airing} ${_utils.line}\n`;
+};
+
+/**
+ * Set the notify header for anime in case it is the last episode.
+ * @param {JSON} data - Anilist data
+ * @returns {String} Message to be printed.
+ */
+const replyNotifyLastEpisodeHeader = data => {
+    const airing = data.airing ? data.airing.next_episode - 1 : episodes;
+    const lastEpisode = (0, _verify.verifyLastEpisode)(airing, data.total_episodes);
+
+    return '' != lastEpisode ? `${_utils.line} ${lastEpisode.trim()} ${_utils.line}\n` : '';
 };
 
 /***********************************************************************************************************************
@@ -410,6 +431,56 @@ ${replyAboutStaff(content.staff)}\n\n${replyAboutStudio(content.studio)}`;
 };
 
 /***********************************************************************************************************************
+ *********************************************** NOTIFY FUNCTIONS ******************************************************
+ **********************************************************************************************************************/
+
+/**
+ * Set the anime data to be a telegram message with the message layout.
+ * @param {json} data - Anilist data
+ * @returns {string} Message to be printed.
+ */
+const replyAnimeNotify = data => {
+    const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
+    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const episodes = (0, _verify.verifyEpisodes)(data.total_episodes);
+    const youtube = (0, _verify.verifyYT)(data.youtube_id);
+    const adult = (0, _verify.verifyAdult)(data.adult);
+    const type = (0, _verify.verifyTypeAnime)(data.type, data.series_type);
+    const watch = (0, _verify.verifyWatchLink)(data);
+
+    return `[\u200B](${data.image_url_lge})${replyNotifyAnimeHeader(data)}${replyNotifyLastEpisodeHeader(data)}\
+${japanese}${english}${youtube}${adult}${type}${episodes}${watch}`;
+};
+
+/**
+ * Parse anime info from latest episode into a notification to the user.
+ * @param {JSON} data- Anime content.
+ * @returns An object containing the update message and buttons.
+ */
+const replyNotify = data => {
+    return {
+        message: replyAnimeNotify(data),
+        keyboard: (0, _keyboard.animeKeyboardWatchlist)(data.id, 'all')
+    };
+};
+
+/**
+ * Set message about content for those who wants to be notified in time.
+ * @param {JSON} data- Anime content.
+ * @returns {string} Message to be printed.
+ */
+const replyNotifyInTime = data => {
+    const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
+    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const watch = (0, _verify.verifyWatchLink)(data);
+    const airing = data.airing ? data.airing.next_episode - 1 : episodes;
+    const episode = (0, _verify.verifyMD)('Episode released', airing);
+    const lastEpisode = (0, _verify.verifyLastEpisode)(airing, data.total_episodes);
+
+    return `${japanese}${english}${lastEpisode}${episode}${watch}`;
+};
+
+/***********************************************************************************************************************
  *********************************************** OTHER FUNCTIONS *******************************************************
  **********************************************************************************************************************/
 
@@ -449,42 +520,6 @@ const replyStatus = data => {
     const end = (0, _verify.verifyDate)('End date', data.end_date);
 
     return `${status}${episodes}${popularity}${start}${end}`;
-};
-
-/**
- * Set the anime data to be a telegram message with the message layout.
- * @param {json} data - Anilist data
- * @returns {string} Message to be printed.
- */
-const replyAnimeNotify = data => {
-    const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
-    const episodes = (0, _verify.verifyEpisodes)(data.total_episodes);
-    const youtube = (0, _verify.verifyYT)(data.youtube_id);
-    const adult = (0, _verify.verifyAdult)(data.adult);
-    const type = (0, _verify.verifyMD)(data.type, data.series_type);
-    const score = (0, _verify.verifyScore)(data.average_score);
-    const watch = (0, _verify.verifyWatchLink)(data);
-    const popularity = (0, _verify.verifyMD)('Popularity', data.popularity);
-    const start = (0, _verify.verifyDate)('Start date', data.start_date);
-    // Why  not  pass notify as argument??? Since the user is reciving a notification it's easy to assume that he wanted
-    // to be notified
-    const notifications = (0, _verify.verifyMD)('Notifications', 'Enabled');
-
-    return `[\u200B](${data.image_url_lge})${_utils.line} NEW EPISODE - ${data.airing.next_episode - 1} ${_utils.line}\n${japanese}\
-${english}${youtube}${adult}${type}${score}${popularity}${start}${episodes}${notifications}${watch}`;
-};
-
-/**
- * Parse anime info from latest episode into a notification to the user.
- * @param {JSON} data- Anime content.
- * @returns An object containing the update message and buttons.
- */
-const replyNotify = data => {
-    return {
-        message: replyAnimeNotify(data),
-        keyboard: (0, _keyboard.animeKeyboardWatchlist)(data.id, 'all')
-    };
 };
 
 /**
@@ -559,8 +594,10 @@ const replyCountdown = (data, notify) => {
     const english = (0, _verify.verifyENTitle)(data.title_english);
     const notifications = (0, _verify.verifyMD)('Notifications', notify ? 'Enabled' : 'Disabled');
     const countdown = (0, _verify.verifyCountdown)(data.airing.countdown);
+    const next = (0, _verify.verifyMD)('Next episode', data.airing.next_episode);
+    const lastEpisode = (0, _verify.verifyLastEpisode)(data.airing.next_episode, data.total_episodes);
 
-    return `${japanese}${english}${notifications}${countdown}`;
+    return `${lastEpisode}${japanese}${english}${notifications}${next}${countdown}`;
 };
 
 /***********************************************************************************************************************
@@ -584,6 +621,7 @@ module.exports = {
     replyList: replyList,
     replyAnimeNotify: replyAnimeNotify,
     replyNotify: replyNotify,
+    replyNotifyInTime: replyNotifyInTime,
     replyInline: replyInline,
     replyBrowse: replyBrowse,
     replyAboutAnime: replyAboutAnime,

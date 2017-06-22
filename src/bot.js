@@ -1,21 +1,38 @@
 'use strict';
 
+import timezone from 'node-google-timezone';
+
+import moment from 'moment-timezone';
+
+import cityTimezones from 'city-timezones';
+
 import {
     telegram,
     menu,
     serverError,
+    aboutBot,
     line,
     indexMessage,
     removeCmd,
     watchMessage,
     cmdMessage,
-    help
+    help,
+    romanize
 } from './utils';
 
 import {
     menuKeyboard,
+    startKeyboard,
+    userKeyboard,
+    timeKeyboard,
+    locationKeyboard,
+    citiesKeyboard,
+    updateTimeKeyboard,
+    countdownKeyboard,
+    moreAnimeKeyboard,
+    moreMangaKeyboard,
     aboutKeyboard,
-    cmdKeyboard,
+    guideKeyboard,
     mangaKeyboardSearch,
     animeKeyboardSearch,
     animeKeyboardNotify,
@@ -43,6 +60,7 @@ import {
     replyList,
     replyAnimeNotify,
     replyNotify,
+    replyNotifyInTime,
     replyInline,
     replyAboutAnime,
     replyAboutManga,
@@ -65,7 +83,7 @@ import {
 } from './search';
 
 /***********************************************************************************************************************
- ************************************************ BOT FUNCTIONS ********************************************************
+ ********************************************** NOTIFY FUNCTIONS *******************************************************
  **********************************************************************************************************************/
 
 /**
@@ -78,36 +96,112 @@ const notifyRelease = (anime, chats) => {
     animePage(anime).then(data => {
         const reply = replyNotify(data);
         chats.forEach(chat => telegram.sendMessage(chat, reply.message, reply.keyboard));
+    }).catch(error => {
+        console.log('[Error] notifyRelease', error);
+        return error;
     });
 }
 
 /**
- * This function seeks all airing animes from user list and shows the order of it's episode releases.
- * @param {Object[Number]} animes - Anislist Animes ID.
- * @returns {Object[JSON]} Layout to be printed.
+ * This function query all content that was released and notifies user about it.
+ * @param {Number} User - User's id.
+ * @param {Object[Number]} content - Content ids.
+ * @returns Nothing, just sent the user a message.
  */
-const showCountdown = animes => new Promise((resolve, reject ) => {
-    Promise.all(animes.map(element => {
-        return animePage(element.content).then(response => {
-            if(response.airing)
-                return {response, notify: element.notify};
-            else
-                return undefined;
+const notifyUserReleases = (user, content) => {
+    Promise.all(content.map(anime => {
+        return animeID(anime).then(data => {
+            return replyNotifyInTime(data);
         });
-    }))
-    // Remove all undefined values -- all not airing animes.
-    .then(data => data.filter(element => element))
-    // Sorts all releasing animes
-    .then(data => data.sort((key_1, key_2) => {
-        return key_1.response.airing.countdown - key_2.response.airing.countdown;
-    }))
-    .then(data => {
-        return data.map((element, index) => {
-            return `${line} ${index} ${line}\n`.concat(replyCountdown(element.response, element.notify));
-        })
-    }).then(data => `${line} COUNTDOWN ${line}\n`.concat(data.join('\n')))
-    .then(resolve).catch(reject);
-});
+    })).then(content => {
+        return content.join('\n');
+    }).then(notification => {
+        telegram.sendMessage(user, `${line} DAILY RELEASES ${line}\n`.concat(notification), {parse_mode: 'Markdown'});
+    }).catch(error => {
+        console.log('[Error] notifyRelease', error);
+        return error;
+    });
+}
+
+/***********************************************************************************************************************
+ ********************************************* TIMEZONE FUNCTIONS ******************************************************
+ **********************************************************************************************************************/
+
+/**
+ * Change user time for notifications.
+ * @param {DB} db - Bot's database.
+ * @param {Number} user - User's id.
+ * @param {String} timzeone - User's timezone.
+ * @returns {Void} Just send the message.
+ */
+const notificationTime = (db, user, timezone) => {
+    if(timezone)
+        telegram.sendMessage(user, 'In what hour of the day you want to be notified about episodes releases',
+        timeKeyboard(user, timezone));
+    // Case user already save his timezone, just want to update time for notifications.
+    else
+        db.getUserTime(user).then(response => {
+            if(response)
+                telegram.sendMessage(user, 'In what hour of the day you want to be notified about episodes releases',
+                // Why convert it to moment if time is alreay a Date? Because is less info to be sent it.
+                timeKeyboard(user, moment(response.time).tz(moment.tz.guess(response.timezone)).format()));
+            else
+                telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
+        }).catch(error => {
+            console.log('[Error] notificationTime', error);
+            return error;
+        });
+}
+
+/**
+ * Change set's the user timezone.
+ * @param {DB} db - Bot's database.
+ * @param {Number} user - User's id.
+ * @param {String} city - User's city.
+ * @returns {Void} Just send the message.
+ */
+const setTimezone = (db, user, city) => {
+    // Doesn't work with no capitalize strings.
+    const results = cityTimezones.lookupViaCity(city.replace(/\b\w/g, l => l.toUpperCase()));
+
+    if(0 < results.length) {
+        if(1 == results.length)
+            notificationTime(db, user, moment(Date.now()).tz(results[0].timezone).format());
+        else
+            telegram.sendMessage(user, `I have found more than one city for, *${city}*. From wich province is yours?`,
+            citiesKeyboard(user, results));
+    }
+
+    else
+        telegram.sendMessage(user, 'City not found, please try it again.', locationKeyboard(user));
+}
+
+/**
+ * Change user time for notifications.
+ * @param {DB} db - Bot's database.
+ * @param {Number} user - User's id.
+ * @param {String} latitude - User's latitude location.
+ * @param {String} longitude - User's longitude location.
+ * @returns {JSON} Message to be printed plus keyboard to be attached to.
+ */
+const changeTime = (db, user, {latitude, longitude}) => {
+    timezone.data(latitude, longitude, Date.now()/1000, (error, tz) => {
+        if(!error && 'OK' == tz.raw_response.status) {
+            let timezone;
+
+            // In case that user is in a diferent timezone then the server.
+            if(tz.raw_response.timeZoneId != moment.tz.guess())
+                timezone = moment(tz.local_timestamp*1000).tz(moment.tz.guess()).format();
+            // Since user, in this case, is in the same timezone as the server no need to convert anything.
+            else
+                timezone = moment().format();
+
+            notificationTime(db, user, timezone);
+        }
+        else
+            telegram.sendMessage(user, 'Function not available at the moment.');
+    });
+}
 
 /***********************************************************************************************************************
  *********************************************** FILTER FUNCTIONS ******************************************************
@@ -260,16 +354,15 @@ const filterMangaByPage = (manga_id, button) => {
  * This function sets all content to Telegram layout.
  * @param {JSON} array - Data text.
  * @param {String} button - Keyboard that's calling it.
- * @param {String} kind - Kind of list.
  * @param {Number} user - User id.
  * @returns {Objetct[String]} List layout.
  */
-const listLayout = (array, button, user, kind) => {
-    return Promise.all(array.map((data, index) => replyList(index, data)))
+const listLayout = (array, button, user) => {
+    return Promise.all(array.map(data => replyList(data)))
     .then(data => {
         const content = (0 < data.length) ? data : 'Empty';
 
-        return [`${line} ${kind} ${line}\n${line} ${button.toUpperCase()} ${line}`].concat(content).join('\n');
+        return [`${line} ${button.toUpperCase()} ${line}`].concat(content).join('\n');
     }).catch(error => {
         console.log('[Error] listLayout Promise:', error);
         return {
@@ -286,7 +379,7 @@ const listLayout = (array, button, user, kind) => {
  * @param {Number} user - User id.
  * @returns {Objetct[String]} Watchlist layout.
  */
-const watchlistLayout = (array, button, user) => listLayout(array, button, user, 'WATCHLIST');
+const watchlistLayout = (array, button, user) => listLayout(array, button, user);
 
 /**
  * This function sets all manga content to Telegram layout.
@@ -295,7 +388,56 @@ const watchlistLayout = (array, button, user) => listLayout(array, button, user,
  * @param {Number} user - User id.
  * @returns {Objetct[String]} Readlist layout.
  */
-const readlistLayout = (array, button, user) => listLayout(array, button, user, 'READLIST');
+const readlistLayout = (array, button, user) => listLayout(array, button, user);
+
+/**
+ * This function filter and then display the layout of options of content to user see more about it.
+ * @param {Number} user - User's ID.
+ * @param {String} type - Type of content.
+ * @param {String} button - Wich button was pressed.
+ * @param {Object[JSON]} data - Content.
+ * @param {Function} filterFunc - Filter content function.
+ * @param {Function} keyboardFunc - Keyboard attached function.
+ * @returns {JSON} message and keyboard attached to it.
+ */
+const listContentLayout = (user, type, button, data, {filterFunc, keyboardFunc}) => new Promise((resolve, reject) => {
+    if(data)
+        Promise.all(data.map(element => filterFunc(element.content, button)))
+        .then(response => response.filter(element => element))
+        .then(response => {
+            const message = (0 < response.length) ?
+                            `Select wich ${type} you want more info about it: ` : 'No content available';
+            resolve({
+                message,
+                keyboard: keyboardFunc(user, response)
+            });
+        });
+    else
+        resolve({
+            message: `*Empty ${button} tab*\nPlease, try adding some content to it.`,
+            keyboard: {parse_mode: 'Markdown'}
+        });
+});
+
+/**
+ * This function returns all user's animes that are in his readlist to show more info about it.
+ * @param {Number} user - User's ID.
+ * @param {String} button - Wich button was pressed.
+ * @param {Object[JSON]} data - Animes content.
+ * @returns {JSON} message and keyboard attached to it.
+ */
+const watchlistContentLayout = (user, button, data) => listContentLayout(user, 'anime', button, data,
+                                                {filterFunc: filterAnimeByStatus, keyboardFunc: moreAnimeKeyboard});
+
+/**
+ * This function returns all user's mangas that are in his readlist to show more info about it.
+ * @param {Number} user - User's ID.
+ * @param {String} button - Wich button was pressed.
+ * @param {Object[JSON]} data - Mangas content.
+ * @returns {JSON} message and keyboard attached to it.
+ */
+const readlistContentLayout = (user, button, data) => listContentLayout(user, 'manga', button, data,
+                                                {filterFunc: filterMangaByStatus, keyboardFunc: moreMangaKeyboard});
 
 /***********************************************************************************************************************
  ************************************************ FETCH FUNCTIONS ******************************************************
@@ -352,8 +494,8 @@ const fetchWatchlist = (db, button, user) => new Promise((resolve, reject) => {
         case 'soon':
         case 'completed':
         case 'cancelled':
-            fetchList(db.fetchAnimes(user), button, user, 'WATCHLIST', watchlistKeyboard, filterAnimeByStatus, watchlistLayout)
-            .then(resolve).catch(error => {
+            fetchList(db.fetchAnimes(user), button, user, 'WATCHLIST', watchlistKeyboard, filterAnimeByStatus,
+            watchlistLayout).then(resolve).catch(error => {
                 reject({
                     message: error,
                     keyboard: keybardFunc(button, user)
@@ -383,8 +525,8 @@ const fetchReadlist = (db, button, user) => new Promise((resolve, reject) => {
         case 'soon':
         case 'completed':
         case 'cancelled':
-            fetchList(db.fetchMangas(user), button, user, 'READLIST', readlistKeyboard, filterMangaByStatus, readlistLayout)
-            .then(resolve).catch(error => {
+            fetchList(db.fetchMangas(user), button, user, 'READLIST', readlistKeyboard, filterMangaByStatus,
+            readlistLayout).then(resolve).catch(error => {
                 reject({
                     message: error,
                     keyboard: keybardFunc(button, user)
@@ -529,9 +671,12 @@ const editContentInfo = (db, user_id, content_id, kind, button) => new Promise((
  */
 const userInfo = (db, id) => {
     return db.fetchUser(id).then(data => {
+        const notify = (data.notify) ? 'Enabled' : 'Disabled';
+        const time = (data.time) ? moment(data.time).format('LT') : 'None';
+
         return {
-            message: `${line} User ${line}\nNotify: ${(data.notify) ? 'Enabled' : 'Disabled'}`,
-            keyboard: aboutKeyboard(id)
+            message: `${line} User ${line}\nNotify: ${notify}\nTime for notifications: ${time}\n`,
+            keyboard: userKeyboard(id)
         };
     })
 }
@@ -632,52 +777,140 @@ const readlist = (db, user, button, positions) => new Promise((resolve, reject) 
     .then(resolve);
 });
 
+/***********************************************************************************************************************
+ ************************************************* MORE FUNCTIONS ******************************************************
+ **********************************************************************************************************************/
+
 /**
- * This function answer the response for data in buttons.
- * @param {DB} db - Users database.
- * @param {Number} user - Users id.
- * @param {String} header - Chat id.
- * @param {String} index - Wich anime show content.
- * @returns {JSON} Message to be printed and keyboard attached to it.
- */
-const list = (db, {header, user, index, kind}) => new Promise((resolve, reject) => {
-    const positions = verifyNumbers(index);
-    const button = kind.toLowerCase();
-
-    if('all' == button || 'airing' == button || 'publishing' == button || 'completed' == button || 'cancelled' == button) {
-        if(0 < positions.length) {
-            switch(header) {
-                case 'WATCHLIST':
-                    resolve(watchlist(db, user, button, positions));
-                    break;
-                case 'READLIST':
-                    resolve(readlist(db, user, button, positions));
-                    break;
-                default:
-                    resolve([{
-                        message: '*Invalid kind*',
-                        keyboard: {parse_mode: 'Markdown'}
-                    }]);
-            }
-        }
-
+ * This function returns animes from user's watchlist in buttons to be selected.
+ * @param {DB} db - Bot's database.
+ * @param {Number} user - User's ID.
+ * @param {String} button - Wich button was pressed.
+ * @returns {JSON} Message and keyboard to be atteched.
+*/
+const watchlistMore = (db, user, button) => new Promise((resolve, reject) => {
+    db.fetchAnimes(user).then(content => {
+        if(content)
+            return content;
         else
-            resolve([{
-                message: '*Invalid index*',
+            resolve({
+                message: `*Empty ${button} tab*\nPlease, try adding some content to it.`,
                 keyboard: {parse_mode: 'Markdown'}
-            }]);
-    }
-
-    else
-        resolve([{
-            message: '*Invalid reply message*',
+            });
+    }).then(fetch => {
+        watchlistContentLayout(user, button, fetch).then(resolve);
+    }).catch(error => {
+        console.log('[Error] watchlistMore', error);
+        resolve({
+            message: `*Server error*\nPlease, inform @Farmy about it.`,
             keyboard: {parse_mode: 'Markdown'}
-        }]);
+        });
+    });
+});
+
+/**
+ * This function returns mangas from user's readlist in buttons to be selected.
+ * @param {DB} db - Bot's database.
+ * @param {Number} user - User's ID.
+ * @param {String} button - Wich button was pressed.
+ * @returns {JSON} Message and keyboard to be atteched.
+*/
+const readlistMore = (db, user, button) => new Promise((resolve, reject) => {
+    db.fetchMangas(user).then(content => {
+        if(content)
+            return content;
+        else
+            resolve({
+                message: `*Empty ${button} tab*\nPlease, try adding some content to it.`,
+                keyboard: {parse_mode: 'Markdown'}
+            });
+    }).then(fetch => {
+        readlistContentLayout(user, button, fetch).then(resolve);
+    }).catch(error => {
+        console.log('[Error] readlistMore', error);
+        resolve({
+            message: `*Server error*\nPlease, inform @Farmy about it.`,
+            keyboard: {parse_mode: 'Markdown'}
+        });
+    });
+});
+
+/**
+ * This function returns specific manga from user's readlist.
+ * @param {DB} db - Bot's database.
+ * @param {Number} user - User's ID.
+ * @param {Number} id - Content's ID.
+ * @param {String} kind - Wich kind of content.
+ * @returns {JSON} Message and keyboard to be atteched.
+*/
+const fetchMore = (db, user, id, kind) => new Promise((resolve, reject) => {
+    switch(kind) {
+        case 'anime':
+            db.fetchAnime(user, id).then(response => {
+                if(response)
+                    animePage(response.content).then(anime => {
+                        resolve({
+                            message: replyAnimeWatchlist({content: anime, notify: response.notify}),
+                            keyboard: animeKeyboardWatchlist(response.content, 'all')
+                        });
+                    });
+                else
+                    resolve({
+                        message: 'Content not found',
+                        keyboard: undefined
+                    });
+            })
+            break;
+        case 'manga':
+            db.fetchManga(user, id).then(response => {
+                if(response)
+                    mangaPage(response.content).then(manga => {
+                        resolve({
+                            message: replyMangaReadlist({content: manga}),
+                            keyboard: mangaKeyboardReadlist(response.content, 'all')
+                        });
+                    });
+                else
+                    resolve({
+                        message: 'Content not found',
+                        keyboard: undefined
+                    });
+            })
+            break;
+    }
 });
 
 /***********************************************************************************************************************
  ************************************************ COMMON FUNCTIONS *****************************************************
  **********************************************************************************************************************/
+
+/**
+ * This function seeks all airing animes from user list and shows the order of it's episode releases.
+ * @param {Object[Number]} animes - Anislist Animes ID.
+ * @returns {Object[JSON]} Layout to be printed.
+ */
+const showCountdown = animes => new Promise((resolve, reject) => {
+    Promise.all(animes.map(element => {
+        return animePage(element.content).then(response => {
+            if(response.airing)
+                return {response, notify: element.notify};
+            else
+                return undefined;
+        });
+    }))
+    // Remove all undefined values -- all not airing animes.
+    .then(data => data.filter(element => element))
+    // Sorts all releasing animes
+    .then(data => data.sort((key_1, key_2) => {
+        return key_1.response.airing.countdown - key_2.response.airing.countdown;
+    }))
+    .then(data => {
+        return data.map((element, index) => {
+            return `${line} ${romanize(index+1)} ${line}\n`.concat(replyCountdown(element.response, element.notify));
+        })
+    }).then(data => `${line} COUNTDOWN ${line}\n`.concat(data.join('\n')))
+    .then(resolve).catch(reject);
+});
 
 /**
  * This function answer the response for data in buttons.
@@ -697,40 +930,62 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
     switch(type) {
         case 'search':
             searchContentInfo(user, kind, id, button).then(data => {
-                resolve({message: data, visualization: true})
+                resolve({message: data, visualization: true});
             }).catch(error => console.log('[Error] buttons anime/staff/character:', error));
             break;
         case 'info':
             editContentInfo(db, user, id, kind, button).then(data => {
-                telegram.editMessageText(chat, message, undefined, data.message, data.keyboard)
+                telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
             }).catch(error => console.log('[Error] buttons info:', error));
             resolve(loadingScreen);
             break;
         case 'user':
-            userInfo(db, user).then(data => {
-                telegram.editMessageText(chat, message, undefined, data.message, data.keyboard)
-            }).catch(error => console.log('[Error] buttons about:', error));
+            if(kind && 'notification' == kind)
+                db.toggleNotifications(user).then(response => {
+                    userInfo(db, user).then(data => {
+                        telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
+                    }).catch(error => console.log('[Error] buttons about:', error));
+                });
+            else
+                userInfo(db, user).then(data => {
+                    telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
+                }).catch(error => console.log('[Error] buttons about:', error));
             resolve(loadingScreen);
             break;
         case 'menu':
-            telegram.editMessageText(chat, message, undefined, menu, menuKeyboard(user))
-            .catch(error => console.log('[Error] buttons menu:', error));
+            telegram.editMessageText(chat, message, undefined, menu, menuKeyboard(user));
             resolve(loadingScreen);
             break;
         case 'watchlist':
-            fetchWatchlist(db, kind, user).then(data => {
-                telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
-            }).catch(error => console.log('[Error] buttons watchlist:', error));
+            if('more' == kind)
+                watchlistMore(db, user, button).then(data => {
+                    telegram.sendMessage(user, data.message, data.keyboard);
+                }).catch(error => console.log('[Error] buttons watchlist more:', error));
+
+            else
+                fetchWatchlist(db, kind, user).then(data => {
+                    telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
+                }).catch(error => console.log('[Error] buttons watchlist fetchWatchlist:', error));
+            
             resolve(loadingScreen);
             break;
         case 'readlist':
-            fetchReadlist(db, kind, user).then(data => {
-                telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
-            }).catch(error => console.log('[Error] buttons readlist:', error));
+            if('more' == kind)
+                readlistMore(db, user, button).then(data => {
+                    telegram.sendMessage(user, data.message, data.keyboard);
+                }).catch(error => console.log('[Error] buttons readlist more:', error));
+            else
+                fetchReadlist(db, kind, user).then(data => {
+                    telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
+                }).catch(error => console.log('[Error] buttons readlist:', error));
             resolve(loadingScreen);
             break;
         case 'guide':
-            telegram.editMessageText(chat, message, undefined, cmdMessage, cmdKeyboard(user));
+            telegram.editMessageText(chat, message, undefined, cmdMessage, guideKeyboard(user));
+            resolve(loadingScreen);
+            break;
+        case 'about':
+            telegram.editMessageText(chat, message, undefined, aboutBot, aboutKeyboard(user));
             resolve(loadingScreen);
             break;
         case 'subscribe':
@@ -740,10 +995,11 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
 
                     switch(kind) {
                         case 'anime':
-                            text = "Added to your Watchlist!\nIf you don't want to be notified upon new episodes, open chat with ANILISTbot and see the guide in Menu.";
+                            text = "Added to your Watchlist!\nIf you don't want to be notified upon new episodes, \
+open chat with ANILISTbot and see the guide in Menu.";
                             break;
                         case 'manga':
-                            text = 'Added to your Readlist!\nTo see it just open a chat with ANILISTbot and press Menu.';
+                            text = 'Added to your Readlist!\nSee it in a chat with ANILISTbot, just press Menu.';
                             break;
                     }
 
@@ -759,13 +1015,15 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
                     switch(kind) {
                         case 'anime':
                             animeID(id).then(anime => {
-                                telegram.editMessageText(chat, message, undefined, replyAnime(anime), animeKeyboardSearch(id));
+                                telegram.editMessageText(chat, message, undefined, replyAnime(anime),
+                                animeKeyboardSearch(id));
                                 resolve({message: 'Removed from your watchlist', visualization: true});
                             }).catch(error => {throw error;});
                             break;
                         case 'manga':
                             mangaID(id).then(manga => {
-                                telegram.editMessageText(chat, message, undefined, replyManga(manga), mangaKeyboardSearch(id));
+                                telegram.editMessageText(chat, message, undefined, replyManga(manga),
+                                mangaKeyboardSearch(id));
                                 resolve({message: 'Removed from your readlist', visualization: true});
                             }).catch(error => {throw error;});
                             break;
@@ -799,17 +1057,55 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
                             break;
                     }
 
+                    resolve({message: `Notification changed to: ${(anime.notify) ? 'Enabled' : 'Disabled' }`,
+                    visualization: true});
                     telegram.editMessageText(chat, message, undefined, layout, animeKeyboardWatchlist(id, kind));
                 }).catch(error => {throw error;});
-                resolve(loadingScreen);
             }).catch(error => console.log('[Error] buttons notify:', error));
             break;
         case 'countdown':
             db.fetchAnimes(user).then(animes => {
                 showCountdown(animes).then(data => {
-                    telegram.editMessageText(chat, message, undefined, data, cmdKeyboard(user));
+                    telegram.editMessageText(chat, message, undefined, data, countdownKeyboard(user));
                 }).catch(error => {throw error;});
             }).catch(error => console.log('[Error] buttons countdown:', error));
+            resolve(loadingScreen);
+            break;
+        case 'time':
+            if('all' == kind)
+                db.getUserTime(user).then(time => {
+                    // User hasn't set any time for notifications yet.
+                    if(!time)
+                        telegram.sendMessage(chat, 'Send your location or search it for your timezone.',
+                        locationKeyboard(user));
+                    else
+                        telegram.sendMessage(chat, 'I already have your timezone. Wanna change it or just update \
+                        notification time?', updateTimeKeyboard(user));
+                })
+            else if('remove' == kind)
+                db.removeTime(user).then(removed => {
+                    if(removed)
+                        telegram.sendMessage(chat, 'Removed time for notifications.', startKeyboard(user));
+                    else
+                        telegram.sendMessage(chat, 'Time for notifications already removed.', startKeyboard(user));
+                }).catch(error => console.log('[Error] buttons time remove:', error));
+            else {
+                db.setTime(user, kind, button).then(response => {
+                    if(response)
+                        telegram.sendMessage(chat, 'Time for notifications setted.', startKeyboard(user));
+                    else
+                        telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', startKeyboard(user));
+                }).catch(error => console.log('[Error] buttons time set:', error));
+            }
+            resolve(loadingScreen);
+            break;
+        case 'timezone':
+            notificationTime(db, user, moment().tz(kind.concat(`/${button}`)).format());
+            break;
+        case 'more':
+            fetchMore(db, user, id, kind).then(data => {
+                telegram.sendMessage(chat, data.message, data.keyboard);
+            }).catch(error => console.log('[Error] buttons fetchMore', error));
             resolve(loadingScreen);
             break;
         default:
@@ -823,6 +1119,9 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
 
 module.exports = {
     buttons,
-    list,
-    notifyRelease
+    notifyRelease,
+    notifyUserReleases,
+    changeTime,
+    setTimezone,
+    notificationTime
 }

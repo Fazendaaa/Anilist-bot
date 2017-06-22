@@ -227,12 +227,28 @@ const verifyRole = role => verifyData(role) != 'Not Available' ? ` - _Role_: ${r
 const verifyCountdown = data => verifyData(data) != 'Not Available' ? ` - _Countdown_: *${(0, _humanizeDuration2.default)(data * 1000, { units: ['d', 'h', 'm'], round: true })}*` : '';
 
 /**
- * Verify wheter or not type is available.
- * @param {String} value - Value of content.
- * @param {String} type - Type of content.
+ * Verify wheter or not anime type is available.
+ * @param {String} value - Value of anime.
+ * @param {String} type - Type of anime.
  * @returns {String} Formated data to be printed.
  */
-const verifyType = (value, type) => verifyData(type) != 'Not Available' && verifyData(value) != 'Not Available' ? `📺 *${type}*(${value})\n` : '';
+const verifyTypeAnime = (value, type) => verifyData(type) != 'Not Available' && verifyData(value) != 'Not Available' ? `📺 *${type}*(${value})\n` : '';
+
+/**
+ * Verify wheter or not manga type is available.
+ * @param {String} value - Value of manga.
+ * @param {String} type - Type of manga.
+ * @returns {String} Formated data to be printed.
+ */
+const verifyTypeManga = (value, type) => verifyData(type) != 'Not Available' && verifyData(value) != 'Not Available' ? `📜 *${type}*(${value})\n` : '';
+
+/**
+ * Verify wheter or not is last episode of the season.
+ * @param {Number} episode - Episode released.
+ * @param {Number} total - Total of episodes.
+ * @returns {String} Formated data to be printed.
+ */
+const verifyLastEpisode = (episode, total) => episode == total ? '😭 SEASON FINALE\n' : '';
 
 /***********************************************************************************************************************
  **************************************************** EXPORTS **********************************************************
@@ -264,5 +280,7 @@ module.exports = {
   verifyRole: verifyRole,
   verifyEmptyString: verifyEmptyString,
   verifyCountdown: verifyCountdown,
-  verifyType: verifyType
+  verifyTypeAnime: verifyTypeAnime,
+  verifyTypeManga: verifyTypeManga,
+  verifyLastEpisode: verifyLastEpisode
 };

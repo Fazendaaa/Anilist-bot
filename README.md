@@ -17,7 +17,9 @@ This bot is up and running in [Heroku](https://www.heroku.com/home)
 * [node-schedule](https://github.com/node-schedule/node-schedule) - Schedule notifications;
 * [mongoose](http://mongoosejs.com) - Bot's database;
 * [moment](https://momentjs.com) - Convert's time formats;
-* [Humanize Duration](https://github.com/EvanHahn/HumanizeDuration.js) - Set countdown.
+* [Humanize Duration](https://github.com/EvanHahn/HumanizeDuration.js) - Set countdown;
+* [Node Google Timezone](https://www.npmjs.com/package/node-google-timezone) - Search for user timezone given his location;
+* [City Timezones](https://www.npmjs.com/package/city-timezones) - Search for user timezone given city name.
 
 ## Contributing
 
@@ -39,10 +41,26 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://gi
 
 Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy to use Anilist wrapper that he made it. And the folks behind Telegraf for an awsome and well documented API. Without these kinda of people and their works it would be harder to make this bot.
 
+## Fixed bugs
+
+**V 2.3**:
+* User now recive notification when it's the releases season finale episode.
+
+## Improvements
+
+**V 2.3**
+* New UI;
+* Added option to user set specifc hour to recive all notificatons about episodes releases;
+* Added notifications in countdown for season finale;
+* Removing some info in notify upon episode release and watchlist -- was too much oversharing;
+* Removed commands: /notifications and /source -- content is available in menu from now on;
+* Remove reply to message in watchlist and readlist -- now user has buttons to do the same.
+
 ## TODO
 
-* System to give user option to set a time for be notified about updates;
-* Login with your Anilist account;
 * Integration with wit.ia;
+* Login with your Anilist account;
+* Add language options.
+* 'Like' system;
 * System to give user recomendations;
-* 'Like' system.
+* Give the user the option to set layout display among title options like: EN, JP and Romanji.

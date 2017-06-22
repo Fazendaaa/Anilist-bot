@@ -3,4 +3,3 @@ manga - + Manga name to be searched
 character - + Character name to be searched
 staff - + Staff name to be searched
 studio - + Studio name to be searched
-source - More info about this bot

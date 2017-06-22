@@ -11,8 +11,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _dotenv2.default.config();
 
 const telegram = new _telegraf.Telegram(process.env.BOT_TOKEN, {
-  agent: null,
-  webhookReply: true
+    agent: null,
+    webhookReply: true
 });
 
 /***********************************************************************************************************************
@@ -52,15 +52,17 @@ ${line} GUIDE ${line}\n\n\
 *Watchlist/Readlist:*\n\n\
 To see more info about your anime/manga just reply the list with the desired content index or indexes — _like in: 0, 1, 2_\n\n\
 *Notifications:*\n\n\
-Notifications are enabled for all airing animes by default. If you want to disable it: /notifications\n\
-If you want to disable or enable specifc animes, open it watchlist and reply with the animes index that you want to toggle notifications.\n\n\
-*ANILISTbot:*\n\n\
-Bot news are released in: [channel](https://t.me/ANILISTbotchannel). If you want to help me out or just see more about my work or this bot: /source\n\n\
-Any bugs or suggestions, talk to: @Farmy`;
+Notifications are enabled for all airing animes by default. If you want to disable it open User tab then click in Notify.\n\
+If you want to disable or enable specifc animes, open it watchlist and then click more info.`;
 
-const source = '🤖 [Github](https://github.com/Fazendaaa/Anilist-bot) — See the code behind this bot\n\
+const aboutBot = `*ANILISTbot:*\n\n\
+Bot news are released in: [channel](https://t.me/ANILISTbotchannel).\n\
+
+If you want to help me out or just see more about my work:\n\
+🤖 [Github](https://github.com/Fazendaaa/Anilist-bot) — See the code behind this bot\n\
 😀 [My website](http://fazendaaa.me) — Check it out some of my other works\n\
-🤓 [Patreon](https://www.patreon.com/Fazenda) — Helps me mantain this bot';
+🤓 [Patreon](https://www.patreon.com/Fazenda) — Helps me mantain this bot\n\n\
+Any bugs or suggestions, talk to: @Farmy`;
 
 const notQuery = '*Could not query the data*';
 const notRm = '*Could remove your data. Please, try it later.*';
@@ -72,26 +74,26 @@ const empty = '*Your watchlist is empty*';
 const logo_al = 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_error.jpg';
 
 const searchMessage = {
-  id: '1',
-  title: 'Search for anything',
-  type: 'article',
-  input_message_content: {
-    message_text: searchText,
-    parse_mode: 'Markdown'
-  },
-  description: searchText,
-  thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_search.jpg'
+    id: '1',
+    title: 'Search for anything',
+    type: 'article',
+    input_message_content: {
+        message_text: searchText,
+        parse_mode: 'Markdown'
+    },
+    description: searchText,
+    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_search.jpg'
 };
 const notFound = {
-  id: '0',
-  title: 'Not Found',
-  type: 'article',
-  input_message_content: {
-    message_text: 'anilist.co',
-    parse_mode: 'HTML'
-  },
-  description: 'Content not found',
-  thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_not_found.jpg'
+    id: '0',
+    title: 'Not Found',
+    type: 'article',
+    input_message_content: {
+        message_text: 'anilist.co',
+        parse_mode: 'HTML'
+    },
+    description: 'Content not found',
+    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_not_found.jpg'
 };
 
 /***********************************************************************************************************************
@@ -126,32 +128,48 @@ const parseToInt = str => /\d+$/.test(str) ? parseInt(str) : NaN;
  */
 const notNaN = data => !isNaN(data);
 
+/**
+ * This function converts a number to its roman equivalent -- code from: https://stackoverflow.com/a/9083076/7092954
+ * @param {Number} num - Number to be converted.
+ * @returns {Number} Equivalent roman number.
+ */
+const romanize = num => {
+    if (!+num) return false;
+    var digits = String(+num).split(""),
+        key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM", "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+        roman = "",
+        i = 3;
+    while (i--) roman = (key[+digits.pop() + i * 10] || "") + roman;
+    return Array(+digits.join("") + 1).join("M") + roman;
+};
+
 /***********************************************************************************************************************
  **************************************************** EXPORTS **********************************************************
  **********************************************************************************************************************/
 
 module.exports = {
-  dotenv: _dotenv2.default,
-  telegram: telegram,
-  Extra: _telegraf.Extra,
-  Markup: _telegraf.Markup,
-  menu: menu,
-  welcome: welcome,
-  help: help,
-  defaultResponse: defaultResponse,
-  searchMessage: searchMessage,
-  cmdMessage: cmdMessage,
-  notFound: notFound,
-  notQuery: notQuery,
-  notRm: notRm,
-  logo_al: logo_al,
-  invalid: invalid,
-  serverError: serverError,
-  empty: empty,
-  line: line,
-  source: source,
-  removeCmd: removeCmd,
-  messageToString: messageToString,
-  parseToInt: parseToInt,
-  notNaN: notNaN
+    dotenv: _dotenv2.default,
+    telegram: telegram,
+    Extra: _telegraf.Extra,
+    Markup: _telegraf.Markup,
+    menu: menu,
+    welcome: welcome,
+    help: help,
+    aboutBot: aboutBot,
+    defaultResponse: defaultResponse,
+    searchMessage: searchMessage,
+    cmdMessage: cmdMessage,
+    notFound: notFound,
+    notQuery: notQuery,
+    notRm: notRm,
+    logo_al: logo_al,
+    invalid: invalid,
+    serverError: serverError,
+    empty: empty,
+    line: line,
+    removeCmd: removeCmd,
+    messageToString: messageToString,
+    parseToInt: parseToInt,
+    notNaN: notNaN,
+    romanize: romanize
 };

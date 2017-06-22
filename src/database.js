@@ -2,6 +2,8 @@
 
 import schedule from 'node-schedule';
 
+import moment from 'moment-timezone';
+
 import {
     mongoose,
     User,
@@ -15,10 +17,7 @@ import {
     dotenv,
     invalid,
     serverError,
-    empty,
-    binaryInsert,
-    binaryRemove,
-    binarySearch
+    empty
 } from './utils';
 
 import {
@@ -26,13 +25,49 @@ import {
 } from './search';
 
 import {
-    notifyRelease
+    notifyRelease,
+    notifyUserReleases
 } from './bot';
 
+/**
+ * This function set a next next day for updates.
+ * @param {Date} time - Actual time.
+ * @param {String} timezone - User's timezone.
+ * @returns {Date} new time to be setted.
+ */
+const setNextDay = (time, timezone) => {
+    let newTime = moment(time).tz(timezone).add(1, 'day');
+
+    // Why?  Looks like there's no need to do this -- 'quite' right. But, if the bot is set down when it's running tests
+    // after this could create a few inconsistencies if not checked.
+    if(moment().add(1, 'day') < newTime)
+        newTime = newTime.subtract(1, 'day');
+        
+    return newTime.format();
+}
+
+/**
+ * This function set time for updates.
+ * @param {Date} time - Updated time.
+ * @returns {Date} new time to be setted.
+ */
+const setDay = time => {
+    let newTime = time;
+
+    // Why?  If  any  server error occurs consistency must always be priorty. This is just to ensure that if user change
+    // his time for updates won't be setted for two days from now or anything like that.
+    if(moment().add(1, 'day') < newTime)
+        newTime = newTime.subtract(1, 'day');
+        
+    return newTime.format();
+}
+
+/**
+ * This is the bot's database and all methods related to it.
+ */
 export default class DB {
     constructor() {
-        const uristring = process.env.MONGODB_URI;
-        mongoose.connect(uristring);
+        mongoose.connect(process.env.MONGODB_URI);
         this.db = mongoose.connection;
         this.db.on('error', console.error.bind(console, 'connection error:'));
         this.db.once('open', () => console.log('DB connected'));
@@ -94,7 +129,7 @@ export default class DB {
             // In case that the user doesn't want to be notified
             if(!user.notify)
                 subscription.notify = false;
-            
+
             return subscription.save().then(subs => {
                 return user.save().then(data => true).catch(error => {throw error;});
             }).catch(error => {throw error;});
@@ -175,7 +210,7 @@ export default class DB {
                 return undefined;
         }).catch(error => {
             console.log(`[Error] DB fetchAll${(type) ? 'Anime' : 'Manga'}:`, error);
-            return {Error: serverError};
+            return undefined;
         });
     }
 
@@ -187,13 +222,16 @@ export default class DB {
      */
     fetchOne(user, content, type) {
         return Subscription.findOne({user, content, type}).then(subscription => {
-            return {
-                content: subscription.content,
-                notify: subscription.notify
-            };
+            if(subscription)
+                return {
+                    content: subscription.content,
+                    notify: subscription.notify
+                };
+            else
+                return undefined;
         }).catch(error => {
             console.log(`[Error] DB fetchOne${(type) ? 'Anime' : 'Manga'}:`, error);
-            return {Error: serverError};
+            return undefined;
         });
     }
 
@@ -302,6 +340,105 @@ export default class DB {
     }
 
     /**
+     * Sets time in case user wants to be notified in specific hour of the day.
+     * @param {Number} _id - User's ID.
+     * @param {String} hour - Hour to be notified upon new releases.
+     * @param {String} timezone - User's timezone.
+     * @returns {Boolean} Wheter or not the operations was sucessfully.
+     */
+    setTime(_id, hour, timezone) {
+        return User.findOneAndUpdate({_id}, {}, this.options).then(user => {
+            // Set time for updates given user timezone.
+            user.timezone = moment.tz.guess(timezone);
+            user.time = setDay(moment(timezone).hours(hour).minutes(0).seconds(0));
+            return user.save().then(data => true).catch(error => {throw error;});
+        }).catch(error => {
+            console.log('[Error] DB setTime:', error);
+            return undefined;
+        });
+    }
+
+    /**
+     * This function verifies wether or not user wants to be notified at specific time.
+     * @param {Number} _id - User's id.
+     * @returns {String} User's time for notifications.
+     */
+    getUserTime(_id) {
+        return User.findOne({_id}).then(user => {
+            if(user && user.time && user.timezone)
+                return {time: user.time, tz: user.timezone};
+            else
+                return undefined;
+        }).catch(error => {
+            console.log('[Error] DB getUserTime:', error);
+            return undefined;
+        });
+    }
+
+    /**
+     * Removes time for notifications.
+     * @param {Number} _id - User's ID.
+     * @returns {Boolean} Wheter or not the operations was sucessfully.
+     */
+    removeTime(_id) {
+        return User.findOneAndUpdate({_id}, {}, this.options).then(user => {
+            if(user.time) {
+                user.time = undefined;
+                user.timezone = undefined;
+                return user.save().then(true).catch(error => {throw error;});
+            }
+            // User already removed his time for notifications
+            else
+                return undefined;
+        }).catch(error => {
+            console.log('[Error] DB removeTime:', error);
+            return undefined;
+        });
+    }
+
+    /**
+     * 
+     * @param {Number} user - User's ID.
+     * @param {Number} content - Content's ID.
+     * @param {Boolean} type - Type of content.
+     * @returns {Subscription} User's subscription of the content.
+     */
+    fetchSubscription(user, content, type) {
+        return Subscription.findOne({user, content, type}).catch(error => {
+            console.log(`[Error] DB fetchSubscription${(type) ? 'Anime' : 'Manga'}:`, error);
+            return {Error: serverError};
+        });
+    }
+
+    /**
+     * Sets user notification to run at notification time.
+     * @param {Number} content - Content's id.
+     * @param {Boolean} type - Content type.
+     * @param {Object[{user, time}]} info - User's id plus the time that they want to be notified.
+     * @returns {Boolean} Wheter or not the operations was sucessfully.
+     */
+    notifyLater(content, type, info) {
+        if(info.length > 0) {
+            info.forEach(element => {
+                return this.fetchSubscription(element.user, content, type).then(subscription => {
+                    // Save subscription reference so, that way, user can be notfied about it.
+                    if(subscription)
+                        return notifyUser.findOneAndUpdate({user: element.user, subscription}, {}, this.options)
+                        .then(true).catch(error => {throw error;});
+                    else
+                        return false;
+                }).catch(error => {
+                    console.log('[Error] DB notifyUpdate:', error);
+                    return undefined;
+                });
+            });
+        }
+
+        else
+            return Promise.resolve(false);
+    }
+
+    /**
      * This function fetchs all subscriptions given content and notifies users about new releases.
      * @param {Number} content - Content ID.
      * @param {Boolean} type - Content type.
@@ -309,13 +446,72 @@ export default class DB {
      */
     notifySubscriptions(content, type) {
         return Subscription.find({content, notify: true, type}).then(data => {
-            // notifiy all users
-            return Promise.all(data.map(element => element.user)).then(users => notifyRelease(content, users))
-            .then(true).catch(error => {throw error;});
+            return Promise.all(data.map(element => element.user)).then(users => {
+                const later = [];
+
+                Promise.all(users.map(user => {
+                    return this.getUserTime(user).then(response => {
+                        // In case user doesn't want to be notified later then release.
+                        if(!response)
+                            return user;
+                        else {
+                            later.push({user, time: response.time});
+                            return undefined;
+                        }
+                    })
+                }))
+                // Remove undefined values.
+                .then(data => data.filter(element => element))
+                .then(notifyNow => {
+                    // notifiy user's now.
+                    notifyRelease(content, notifyNow);
+                    // notifiy user's later.
+                    this.notifyLater(content, type, later);
+                }).then(true).catch(error => {throw error;});
+
+            }).then(true).catch(error => {throw error;});
         }).catch(error => {
             console.log('[Error] DB notifySubscriptions:', error);
             return false;
         });
+    }
+
+    /**
+     * This will run and notify users about the daily releases.
+     * @param {Object[JSON]} users - User's to be notified in setted time.
+     * @returns {Object[JSON]} Updated users.
+     */
+    notifyInTime(users) {
+        // Find all the content the were released between last update and this one.
+        users.forEach(user => { notifyUser.find({user: user._id}).then(notifications => {
+            if(0 < notifications.length)
+                Promise.all(notifications.map(element => {
+                    const subscpritonID = element.subscription;
+
+                    // Remove  user  notifications so memory could be freed since won't be needed it at least user has a
+                    // new notifications.
+                    // So  why  removing  it?  User could be only seeing a few animes/mangas per week, that way would be
+                    // storing much more space all week for a notification the runs only once in a week.
+                    element.remove().catch(error => {throw error;});
+
+                    return Subscription.findById(subscpritonID).then(subscription => {
+                        // Why  checking  it  again?  Because user could disabled notification after the release or even
+                        // removed  the  subscription.  Then  saving  it  so  user  recives  only one message instead of
+                        // multiples -- like a spam.
+                        if(subscription && subscription.notify)
+                            return subscription.content;
+                    }).catch(error => {throw error;});
+                })).then(releases => {
+                    // Notifiy user about all content releases that were released.
+                    notifyUserReleases(user._id, releases);
+                });
+
+            else
+                console.log('No notifications for this user');
+        }).catch(error => {
+            console.log('[Error] DB notifyInTime', error);
+            return error;
+        });});
     }
 
     /**
@@ -328,39 +524,70 @@ export default class DB {
     
         console.log('Notify starting up.');
 
-        // Run  each 'half' hour -- since most of animes are released in hours like 12:00 or 12:30, if the schedule runs
-        // at times like 12:01 and !2:31, user's will be notified one minute later after release.
-        const process = schedule.scheduleJob('*/31 * * * *', () => {
+        // Runs each half hour -- since most of animes are released in hours like 12:00 or 12:30.
+        const process = schedule.scheduleJob('00,30 * * * *', () => {
             const serverTime = new Date(Date.now());
-            console.log(`[${serverTime.toString()}] Running notifications...`);
+            console.log(`[${serverTime.toString()}] Running content notifications.`);
 
-            // Verifies all content that time of release is less than actual server time
-            Notifications.find({type}).where('time').lt(serverTime).then(content => {
+            // Verifies all content that time of release is less or equal to actual server time - meaning tha episode is
+            // already released.
+            Notifications.find({type}).where('time').lte(serverTime).then(content => {
                 // Notify only if there's any content to be notified.
                 if(0 < content.length) {
                     content.forEach(element => {
-                        // Notify all users upon new release
+                        // Notify all users upon new releases.
                         this.notifySubscriptions(element._id, type);
                         // Update relase time
                         searchAnimeRelaseDate(element._id).then(time => {
-                            // update to next release
+                            // update to next release.
                             if(time)
                                 return element.update({time}).then(counter => {
                                     return (counter) ? true : false;
                                 }).catch(error => {throw error;});
-                            // or remove it in case it's finished -- or cancelled
+                            // or remove it in case it's finished -- or cancelled.
                             else
                                 return element.remove().then(counter => {
                                     return (counter) ? true : false;
                                 }).catch(error => {throw error;});
-                        }).catch(error => {throw error;})
+                        }).catch(error => {throw error;});
                     });
                 }
                 else
-                    console.log('No content available in notifications.');
+                    console.log('No available notifications in content.');
             }).catch(error => {
-                console.log('[Error] runNotify:', error);
+                console.log('[Error] runNotify content:', error);
                 process.cancel();
+            });
+        });
+
+        // Runs each hour.
+        const later = schedule.scheduleJob('00 * * * *', () => {
+            const laterTime = new Date(Date.now());
+            console.log(`[${laterTime.toString()}] Running user notifications.`);
+            
+            // Verifies  only  the  users  whom  seted  this hour to be notified. Why comparing with a new date? Because
+            // laterTime won't match because of miliseconds offset.
+            User.find({notify: true}).where('time').equals(moment(laterTime).seconds(0).milliseconds(0).toISOString())
+            .then(users => {
+                if(0 < users.length) {
+                    // All user that have notifications to this time will be notified.
+                    this.notifyInTime(users);
+
+                    // Why  updates all users that have this time for notifications even those who weren't notified now?
+                    // If  those users who weren't notified today have notifications for tomorrow they won't be notified
+                    // because they time would not match with the server, even thought they have notifications -- that's
+                    // why the need to update it.
+                    users.forEach(user => {
+                        user.time = setNextDay(user.time, user.timezone);
+                        user.save().catch(error => {throw error;});
+                    });
+                }
+
+                else
+                    console.log('No users to be notified.');
+            }).catch(error => {
+                console.log('[Error] runNotify user:', error);
+                later.cancel();
             });
         });
     }

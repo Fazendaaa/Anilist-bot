@@ -5,46 +5,46 @@
     "linecount": [
         {
             "version": "0.1.7",
-            "counttime": "2017-06-07 22:38:49",
-            "filesum": 10,
-            "codesum": 2044,
-            "commentsum": 951,
-            "blanksum": 333,
+            "counttime": "2017-06-21 09:33:50",
+            "filesum": 9,
+            "codesum": 2553,
+            "commentsum": 1220,
+            "blanksum": 404,
             "filelist": [
+                {
+                    "blank": 72,
+                    "code": 786,
+                    "comment": 266,
+                    "filename": "bot.js"
+                },
                 {
                     "blank": 53,
-                    "code": 556,
-                    "comment": 182,
-                    "filename": "bot.js"
-                },
-                {
-                    "blank": 32,
-                    "code": 210,
-                    "comment": 125,
+                    "code": 332,
+                    "comment": 195,
                     "filename": "database.js"
                 },
                 {
-                    "blank": 29,
-                    "code": 252,
-                    "comment": 71,
+                    "blank": 49,
+                    "code": 326,
+                    "comment": 128,
                     "filename": "keyboard.js"
                 },
                 {
-                    "blank": 29,
-                    "code": 123,
-                    "comment": 2,
+                    "blank": 27,
+                    "code": 142,
+                    "comment": 5,
                     "filename": "main.js"
                 },
                 {
                     "blank": 21,
-                    "code": 168,
-                    "comment": 58,
+                    "code": 176,
+                    "comment": 80,
                     "filename": "model.js"
                 },
                 {
-                    "blank": 63,
-                    "code": 389,
-                    "comment": 163,
+                    "blank": 72,
+                    "code": 417,
+                    "comment": 186,
                     "filename": "reply.js"
                 },
                 {
@@ -54,91 +54,15 @@
                     "filename": "search.js"
                 },
                 {
-                    "blank": 3,
-                    "code": 3,
-                    "comment": 21,
-                    "filename": "test.js"
-                },
-                {
-                    "blank": 20,
-                    "code": 95,
-                    "comment": 30,
+                    "blank": 22,
+                    "code": 117,
+                    "comment": 38,
                     "filename": "utils.js"
                 },
                 {
-                    "blank": 36,
-                    "code": 84,
-                    "comment": 134,
-                    "filename": "verify.js"
-                }
-            ]
-        },
-        {
-            "version": "0.1.7",
-            "counttime": "2017-06-12 15:45:40",
-            "filesum": 10,
-            "codesum": 2162,
-            "commentsum": 983,
-            "blanksum": 351,
-            "filelist": [
-                {
-                    "blank": 54,
-                    "code": 585,
-                    "comment": 189,
-                    "filename": "bot.js"
-                },
-                {
-                    "blank": 32,
-                    "code": 210,
-                    "comment": 126,
-                    "filename": "database.js"
-                },
-                {
-                    "blank": 32,
-                    "code": 261,
-                    "comment": 76,
-                    "filename": "keyboard.js"
-                },
-                {
-                    "blank": 29,
-                    "code": 125,
-                    "comment": 2,
-                    "filename": "main.js"
-                },
-                {
-                    "blank": 21,
-                    "code": 168,
-                    "comment": 58,
-                    "filename": "model.js"
-                },
-                {
-                    "blank": 65,
-                    "code": 400,
-                    "comment": 170,
-                    "filename": "reply.js"
-                },
-                {
-                    "blank": 47,
-                    "code": 164,
-                    "comment": 165,
-                    "filename": "search.js"
-                },
-                {
-                    "blank": 12,
-                    "code": 60,
-                    "comment": 22,
-                    "filename": "test.js"
-                },
-                {
-                    "blank": 20,
-                    "code": 100,
-                    "comment": 30,
-                    "filename": "utils.js"
-                },
-                {
-                    "blank": 39,
-                    "code": 89,
-                    "comment": 145,
+                    "blank": 41,
+                    "code": 93,
+                    "comment": 157,
                     "filename": "verify.js"
                 }
             ]

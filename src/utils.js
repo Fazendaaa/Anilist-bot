@@ -52,15 +52,17 @@ ${line} GUIDE ${line}\n\n\
 *Watchlist/Readlist:*\n\n\
 To see more info about your anime/manga just reply the list with the desired content index or indexes — _like in: 0, 1, 2_\n\n\
 *Notifications:*\n\n\
-Notifications are enabled for all airing animes by default. If you want to disable it: /notifications\n\
-If you want to disable or enable specifc animes, open it watchlist and reply with the animes index that you want to toggle notifications.\n\n\
-*ANILISTbot:*\n\n\
-Bot news are released in: [channel](https://t.me/ANILISTbotchannel). If you want to help me out or just see more about my work or this bot: /source\n\n\
-Any bugs or suggestions, talk to: @Farmy`;
+Notifications are enabled for all airing animes by default. If you want to disable it open User tab then click in Notify.\n\
+If you want to disable or enable specifc animes, open it watchlist and then click more info.`;
 
-const source = '🤖 [Github](https://github.com/Fazendaaa/Anilist-bot) — See the code behind this bot\n\
+const aboutBot = `*ANILISTbot:*\n\n\
+Bot news are released in: [channel](https://t.me/ANILISTbotchannel).\n\
+
+If you want to help me out or just see more about my work:\n\
+🤖 [Github](https://github.com/Fazendaaa/Anilist-bot) — See the code behind this bot\n\
 😀 [My website](http://fazendaaa.me) — Check it out some of my other works\n\
-🤓 [Patreon](https://www.patreon.com/Fazenda) — Helps me mantain this bot';
+🤓 [Patreon](https://www.patreon.com/Fazenda) — Helps me mantain this bot\n\n\
+Any bugs or suggestions, talk to: @Farmy`;
 
 const notQuery = '*Could not query the data*';
 const notRm = '*Could remove your data. Please, try it later.*';
@@ -128,6 +130,25 @@ const parseToInt = str => (/\d+$/.test(str)) ? parseInt(str) : NaN;
  */
 const notNaN = data => !isNaN(data);
 
+/**
+ * This function converts a number to its roman equivalent -- code from: https://stackoverflow.com/a/9083076/7092954
+ * @param {Number} num - Number to be converted.
+ * @returns {Number} Equivalent roman number.
+ */
+const romanize = num => {
+    if (!+num)
+        return false;
+    var digits = String(+num).split(""),
+        key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
+               "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
+               "","I","II","III","IV","V","VI","VII","VIII","IX"],
+        roman = "",
+        i = 3;
+    while (i--)
+        roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+    return Array(+digits.join("") + 1).join("M") + roman;
+}
+
 /***********************************************************************************************************************
  **************************************************** EXPORTS **********************************************************
  **********************************************************************************************************************/
@@ -140,6 +161,7 @@ module.exports = {
     menu,
     welcome,
     help,
+    aboutBot,
     defaultResponse,
     searchMessage,
     cmdMessage,
@@ -151,9 +173,9 @@ module.exports = {
     serverError,
     empty,
     line,
-    source,
     removeCmd,
     messageToString,
     parseToInt,
     notNaN,
+    romanize
 }
