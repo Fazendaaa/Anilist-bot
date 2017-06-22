@@ -352,13 +352,14 @@ const filterMangaByPage = (manga_id, button) => {
 
 /**
  * This function sets all content to Telegram layout.
+ * @param {String} type - Content type.
  * @param {JSON} array - Data text.
  * @param {String} button - Keyboard that's calling it.
  * @param {Number} user - User id.
  * @returns {Objetct[String]} List layout.
  */
-const listLayout = (array, button, user) => {
-    return Promise.all(array.map(data => replyList(data)))
+const listLayout = (type, array, button, user) => {
+    return Promise.all(array.map(data => replyList(data, type)))
     .then(data => {
         const content = (0 < data.length) ? data : 'Empty';
 
@@ -379,7 +380,7 @@ const listLayout = (array, button, user) => {
  * @param {Number} user - User id.
  * @returns {Objetct[String]} Watchlist layout.
  */
-const watchlistLayout = (array, button, user) => listLayout(array, button, user);
+const watchlistLayout = (array, button, user) => listLayout('anime', array, button, user);
 
 /**
  * This function sets all manga content to Telegram layout.
@@ -388,7 +389,7 @@ const watchlistLayout = (array, button, user) => listLayout(array, button, user)
  * @param {Number} user - User id.
  * @returns {Objetct[String]} Readlist layout.
  */
-const readlistLayout = (array, button, user) => listLayout(array, button, user);
+const readlistLayout = (array, button, user) => listLayout('manga', array, button, user);
 
 /**
  * This function filter and then display the layout of options of content to user see more about it.

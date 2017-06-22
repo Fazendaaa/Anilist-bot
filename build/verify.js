@@ -88,9 +88,11 @@ const verifyJPTitle = data => 'Not available' != verifyString(data) ? `🇯🇵 
 /**
  * Verify if english title is available or not.
  * @param {string} data - Title to be verified.
+ * @param {Number} id - Content id.
+ * @param {string} type - Content type.
  * @returns {string} Original string parsed to title markdwon or error message.
  */
-const verifyENTitle = data => 'Not available' != verifyString(data) ? `🇬🇧 *${data}*\n` : '';
+const verifyENTitle = (data, id, type) => 'Not available' != verifyString(data) ? `🇬🇧 [${data}](https://anilist.co/${type}/${id})\n` : '';
 /*  The double rectangles before data are the representative emoji for the british flag */
 
 /**

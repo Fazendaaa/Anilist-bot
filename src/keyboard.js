@@ -123,9 +123,13 @@ const guideKeyboard = id => {
  * @returns {Keyboard} Countdown keyboard.
  */
 const countdownKeyboard = id => {
-    return Extra.markdown().markup(m => m.inlineKeyboard([
+    const keyboard = Extra.markdown().markup(m => m.inlineKeyboard([
         m.callbackButton('<', `menu/${id}`)
     ]));
+
+    keyboard.disable_web_page_preview = true;
+
+    return keyboard;
 }
 
 /**

@@ -17,7 +17,7 @@ var _utils = require('./utils');
  */
 const replyBrowseAnime = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, 'anime');
     const type = (0, _verify.verifyTypeAnime)(data.series_type, data.type);
     const start = (0, _verify.verifyDate)('Start date', data.start_date);
     const end = (0, _verify.verifyDate)('End date', data.end_date);
@@ -38,7 +38,7 @@ ${start}${end}`;
  */
 const replyBrowseManga = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, 'manga');
     const type = (0, _verify.verifyTypeManga)(data.series_type, data.type);
     const start = (0, _verify.verifyDate)('Start date', data.start_date);
     const end = (0, _verify.verifyDate)('End date', data.end_date);
@@ -119,7 +119,7 @@ const replyBrowse = (type, data) => {
  */
 const replyManga = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, 'manga');
     const youtube = (0, _verify.verifyYT)(data.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.adult);
     const type = (0, _verify.verifyTypeManga)(data.type, data.series_type);
@@ -131,7 +131,7 @@ const replyManga = data => {
     const start = (0, _verify.verifyDate)('Start date', data.start_date);
     const end = (0, _verify.verifyDate)('End date', data.end_date);
 
-    return `[\u200B](${data.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}${volumes}\
+    return `[\u200B](${data.image_url_lge})${english}${japanese}${youtube}${adult}${type}${score}${status}${volumes}\
 ${chapters}${popularity}${start}${end}`;
 };
 
@@ -142,7 +142,7 @@ ${chapters}${popularity}${start}${end}`;
  */
 const replyAnime = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, 'anime');
     const youtube = (0, _verify.verifyYT)(data.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.adult);
     const type = (0, _verify.verifyTypeAnime)(data.type, data.series_type);
@@ -153,7 +153,7 @@ const replyAnime = data => {
     const start = (0, _verify.verifyDate)('Start date', data.start_date);
     const end = (0, _verify.verifyDate)('End date', data.end_date);
 
-    return `[\u200B](${data.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}${episodes}\
+    return `[\u200B](${data.image_url_lge})${english}${japanese}${youtube}${adult}${type}${score}${status}${episodes}\
 ${popularity}${start}${end}`;
 };
 
@@ -166,9 +166,9 @@ const replyCharacter = data => {
     const firstName = (0, _verify.verifyEmptyString)(data.name_first);
     const lastName = (0, _verify.verifyEmptyString)(data.name_last);
     const japanese = (0, _verify.verifyJPTitle)(data.name_japanese);
-    const english = (0, _verify.verifyENTitle)(`${firstName} ${lastName}`);
+    const english = (0, _verify.verifyENTitle)(`${firstName} ${lastName}`, data.id, 'character');
 
-    return `[\u200B](${data.image_url_lge})${japanese}${english}`;
+    return `[\u200B](${data.image_url_lge})${english}${japanese}`;
 };
 
 /**
@@ -182,11 +182,11 @@ const replyStaff = data => {
     const englishFirst = (0, _verify.verifyEmptyString)(data.name_first);
     const englishLast = (0, _verify.verifyEmptyString)(data.name_last);
     const japanese = (0, _verify.verifyJPTitle)(`${japaneseFirst} ${japaneseLast}`);
-    const english = (0, _verify.verifyENTitle)(`${englishFirst} ${englishLast}`);
+    const english = (0, _verify.verifyENTitle)(`${englishFirst} ${englishLast}`, data.id, 'staff');
     const language = (0, _verify.verifyMD)('Language', data.language);
     const website = (0, _verify.verifyWS)(data.website);
 
-    return `[\u200B](${data.image_url_lge})${japanese}${english}${language}${website}`;
+    return `[\u200B](${data.image_url_lge})${english}${japanese}${language}${website}`;
 };
 
 /**
@@ -212,7 +212,7 @@ const replyStudio = data => {
  */
 const replyMangaReadlist = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.content.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.content.title_english);
+    const english = (0, _verify.verifyENTitle)(data.content.title_english, data.content.id, 'manga');
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
     const type = (0, _verify.verifyTypeManga)(data.content.type, data.content.series_type);
@@ -224,7 +224,7 @@ const replyMangaReadlist = data => {
     const start = (0, _verify.verifyDate)('Start date', data.content.start_date);
     const end = (0, _verify.verifyDate)('End date', data.content.end_date);
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}\
+    return `[\u200B](${data.content.image_url_lge})${english}${japanese}${youtube}${adult}${type}${score}${status}\
 ${volumes}${chapters}${popularity}${start}${end}`;
 };
 
@@ -235,7 +235,7 @@ ${volumes}${chapters}${popularity}${start}${end}`;
  */
 const replyAnimeWatchlist = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.content.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.content.title_english);
+    const english = (0, _verify.verifyENTitle)(data.content.title_english, 'anime');
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
     const type = (0, _verify.verifyTypeAnime)(data.content.type, data.content.series_type);
@@ -249,20 +249,21 @@ const replyAnimeWatchlist = data => {
     const next = (0, _verify.verifyNextEpisode)(data.content.airing);
     const watch = (0, _verify.verifyWatchLink)(data.content);
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${score}${status}\
+    return `[\u200B](${data.content.image_url_lge})${english}${japanese}${youtube}${adult}${type}${score}${status}\
 ${episodes}${popularity}${start}${end}${notifications}${next}${watch}`;
 };
 
 /**
  * Put in a preview layout about the user list data.
  * @param {Number} data - Contet.
+ * @param {String} type - Content type.
  * @returns List preview info.
  */
-const replyList = data => {
+const replyList = (data, type) => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, type);
 
-    return `${japanese}${english}`;
+    return `${english}${japanese}`;
 };
 
 /***********************************************************************************************************************
@@ -276,13 +277,13 @@ const replyList = data => {
  */
 const replyAnimeHeader = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.content.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.content.title_english);
+    const english = (0, _verify.verifyENTitle)(data.content.title_english, data.content.id, 'anime');
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
     const type = (0, _verify.verifyTypeAnime)(data.content.type, data.content.series_type);
     const notifications = (0, _verify.verifyMD)('Notifications', data.notify ? 'Enabled' : 'Disabled');
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}${notifications}`;
+    return `[\u200B](${data.content.image_url_lge})${english}${japanese}${youtube}${adult}${type}${notifications}`;
 };
 
 /**
@@ -292,12 +293,12 @@ const replyAnimeHeader = data => {
  */
 const replyMangaHeader = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.content.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.content.title_english);
+    const english = (0, _verify.verifyENTitle)(data.content.title_english, data.content.id, 'manga');
     const youtube = (0, _verify.verifyYT)(data.content.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.content.adult);
     const type = (0, _verify.verifyTypeManga)(data.content.type, data.content.series_type);
 
-    return `[\u200B](${data.content.image_url_lge})${japanese}${english}${youtube}${adult}${type}`;
+    return `[\u200B](${data.content.image_url_lge})${english}${japanese}${youtube}${adult}${type}`;
 };
 
 /**
@@ -441,7 +442,7 @@ ${replyAboutStaff(content.staff)}\n\n${replyAboutStudio(content.studio)}`;
  */
 const replyAnimeNotify = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, 'anime');
     const episodes = (0, _verify.verifyEpisodes)(data.total_episodes);
     const youtube = (0, _verify.verifyYT)(data.youtube_id);
     const adult = (0, _verify.verifyAdult)(data.adult);
@@ -449,7 +450,7 @@ const replyAnimeNotify = data => {
     const watch = (0, _verify.verifyWatchLink)(data);
 
     return `[\u200B](${data.image_url_lge})${replyNotifyAnimeHeader(data)}${replyNotifyLastEpisodeHeader(data)}\
-${japanese}${english}${youtube}${adult}${type}${episodes}${watch}`;
+${english}${japanese}${youtube}${adult}${type}${episodes}${watch}`;
 };
 
 /**
@@ -471,13 +472,13 @@ const replyNotify = data => {
  */
 const replyNotifyInTime = data => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, 'anime');
     const watch = (0, _verify.verifyWatchLink)(data);
     const airing = data.airing ? data.airing.next_episode - 1 : episodes;
     const episode = (0, _verify.verifyMD)('Episode released', airing);
     const lastEpisode = (0, _verify.verifyLastEpisode)(airing, data.total_episodes);
 
-    return `${japanese}${english}${lastEpisode}${episode}${watch}`;
+    return `${english}${japanese}${lastEpisode}${episode}${watch}`;
 };
 
 /***********************************************************************************************************************
@@ -591,13 +592,13 @@ const replyInline = (type, data) => {
  */
 const replyCountdown = (data, notify) => {
     const japanese = (0, _verify.verifyJPTitle)(data.title_japanese);
-    const english = (0, _verify.verifyENTitle)(data.title_english);
+    const english = (0, _verify.verifyENTitle)(data.title_english, data.id, 'anime');
     const notifications = (0, _verify.verifyMD)('Notifications', notify ? 'Enabled' : 'Disabled');
     const countdown = (0, _verify.verifyCountdown)(data.airing.countdown);
     const next = (0, _verify.verifyMD)('Next episode', data.airing.next_episode);
     const lastEpisode = (0, _verify.verifyLastEpisode)(data.airing.next_episode, data.total_episodes);
 
-    return `${lastEpisode}${japanese}${english}${notifications}${next}${countdown}`;
+    return `${lastEpisode}${english}${japanese}${notifications}${next}${countdown}`;
 };
 
 /***********************************************************************************************************************
