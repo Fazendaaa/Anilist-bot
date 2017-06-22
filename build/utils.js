@@ -50,7 +50,7 @@ ${line} GUIDE ${line}\n\n\
 /staff _'staff name'_\n\
 /studio _'studio name'_\n\n\
 *Watchlist/Readlist:*\n\n\
-To see more info about your anime/manga just reply the list with the desired content index or indexes — _like in: 0, 1, 2_\n\n\
+To see more info about your anime/manga just presse More Info button\n\n\
 *Notifications:*\n\n\
 Notifications are enabled for all airing animes by default. If you want to disable it open User tab then click in Notify.\n\
 If you want to disable or enable specifc animes, open it watchlist and then click more info.`;

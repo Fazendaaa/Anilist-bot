@@ -5,22 +5,22 @@
     "linecount": [
         {
             "version": "0.1.7",
-            "counttime": "2017-06-21 09:33:50",
+            "counttime": "2017-06-21 22:50:30",
             "filesum": 9,
-            "codesum": 2553,
-            "commentsum": 1220,
-            "blanksum": 404,
+            "codesum": 2561,
+            "commentsum": 1259,
+            "blanksum": 407,
             "filelist": [
                 {
                     "blank": 72,
-                    "code": 786,
+                    "code": 787,
                     "comment": 266,
                     "filename": "bot.js"
                 },
                 {
-                    "blank": 53,
-                    "code": 332,
-                    "comment": 195,
+                    "blank": 55,
+                    "code": 337,
+                    "comment": 202,
                     "filename": "database.js"
                 },
                 {
@@ -30,9 +30,9 @@
                     "filename": "keyboard.js"
                 },
                 {
-                    "blank": 27,
-                    "code": 142,
-                    "comment": 5,
+                    "blank": 28,
+                    "code": 144,
+                    "comment": 37,
                     "filename": "main.js"
                 },
                 {

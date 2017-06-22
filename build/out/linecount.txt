@@ -2,17 +2,17 @@
 EXTENSION NAME : linecount
 EXTENSION VERSION : 0.1.7
 -------------------------------------------------------------------------------
-count time : 2017-06-21 09:33:50
+count time : 2017-06-21 22:50:30
 count workspace : /home/farm/Documents/Anilist-bot/src
 total files : 9
-total code lines : 2553
-total comment lines : 1220
-total blank lines : 404
+total code lines : 2561
+total comment lines : 1259
+total blank lines : 407
 
-bot.js, code is 786, comment is 266, blank is 72.
-database.js, code is 332, comment is 195, blank is 53.
+bot.js, code is 787, comment is 266, blank is 72.
+database.js, code is 337, comment is 202, blank is 55.
 keyboard.js, code is 326, comment is 128, blank is 49.
-main.js, code is 142, comment is 5, blank is 27.
+main.js, code is 144, comment is 37, blank is 28.
 model.js, code is 176, comment is 80, blank is 21.
 reply.js, code is 417, comment is 186, blank is 72.
 search.js, code is 164, comment is 165, blank is 47.
