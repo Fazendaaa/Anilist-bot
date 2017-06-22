@@ -525,8 +525,7 @@ export default class DB {
         console.log('Notify starting up.');
 
         // Runs each half hour -- since most of animes are released in hours like 12:00 or 12:30.
-        // const process = schedule.scheduleJob('00,30 * * * *', () => {
-        const process = schedule.scheduleJob('*/5 * * * * *', () => {
+        const process = schedule.scheduleJob('00,30 * * * *', () => {
             const serverTime = new Date(Date.now());
             console.log(`[${serverTime.toString()}] Running content notifications.`);
 
@@ -562,8 +561,7 @@ export default class DB {
         });
 
         // Runs each hour.
-        // const later = schedule.scheduleJob('00 * * * *', () => {
-        const later = schedule.scheduleJob('*/5 * * * * *', () => {
+        const later = schedule.scheduleJob('00 * * * *', () => {
             const laterTime = new Date(Date.now());
             console.log(`[${laterTime.toString()}] Running user notifications.`);
             
