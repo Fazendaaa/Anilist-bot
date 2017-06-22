@@ -53,7 +53,8 @@ ${line} GUIDE ${line}\n\n\
 To see more info about your anime/manga just presse More Info button\n\n\
 *Notifications:*\n\n\
 Notifications are enabled for all airing animes by default. If you want to disable it open User tab then click in Notify.\n\
-If you want to disable or enable specifc animes, open it watchlist and then click more info.`;
+If you want to disable or enable specifc animes, open it watchlist and then click more info.\n\
+Or event if want set a time of the day for recive all notifications, click in Time in User tab.`;
 
 const aboutBot = `*ANILISTbot:*\n\n\
 Bot news are released in: [channel](https://t.me/ANILISTbotchannel).\n\
