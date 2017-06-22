@@ -943,15 +943,18 @@ const buttons = (db, {message, user, chat, args}) => new Promise((resolve, rejec
         case 'user':
             if(kind && 'notification' == kind)
                 db.toggleNotifications(user).then(response => {
+                    resolve({message: `Notification changed to: ${(response) ? 'Enabled' : 'Disabled' }`,
+                    visualization: true});
                     userInfo(db, user).then(data => {
                         telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
                     }).catch(error => console.log('[Error] buttons about:', error));
                 });
-            else
+            else {
                 userInfo(db, user).then(data => {
                     telegram.editMessageText(chat, message, undefined, data.message, data.keyboard);
                 }).catch(error => console.log('[Error] buttons about:', error));
-            resolve(loadingScreen);
+                resolve(loadingScreen);
+            }
             break;
         case 'menu':
             telegram.editMessageText(chat, message, undefined, menu, menuKeyboard(user));

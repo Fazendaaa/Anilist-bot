@@ -21,10 +21,10 @@ const telegram = new _telegraf.Telegram(process.env.BOT_TOKEN, {
 
 const line = '———';
 
-const help = "Wanna find _animes, mangas, characters, staff_ or _studios_? Try it using @AnilistBot in any of your chats, \
+const help = "Wanna find _animes, mangas, characters, staff_ or _studios_? Try it using ANILISTbot in any of your chats, \
 just type in the message field what you want!\n\n\
 Try an exemple:\n\
-@ANILISTbot 'Pokemon'\n\n\
+@ANILISTbot Pokemon\n\n\
 This bot has special features for you:\n\
 *- notifications when new episodes releases*\n\
 *- countdown for episodes*\n\
@@ -43,12 +43,12 @@ Other commands in guide.`;
 const cmdMessage = `\
 ${line} GUIDE ${line}\n\n\
 *Search features:*\n\n\
-@ANILISTbot _'Search...'_\n\n\
-/anime _'anime name'_\n\
-/manga _'manga name'_\n\
-/character _'character name'_\n\
-/staff _'staff name'_\n\
-/studio _'studio name'_\n\n\
+@ANILISTbot _Search..._\n\n\
+/anime _anime name_\n\
+/manga _manga name_\n\
+/character _character name_\n\
+/staff _staff name_\n\
+/studio _studio name_\n\n\
 *Watchlist/Readlist:*\n\n\
 To see more info about your anime/manga just presse More Info button\n\n\
 *Notifications:*\n\n\
