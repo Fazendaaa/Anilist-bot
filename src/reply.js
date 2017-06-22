@@ -349,6 +349,7 @@ const replyMangaHeader = data => {
  * @returns {String} Message to be printed.
  */
 const replyNotifyAnimeHeader = data => {
+    const episodes = verifyEpisodes(data.total_episodes);
     // Case  the  last episode is released the data.airing option will not be available anymore, that said mean that the
     // last episode is released.
     const airing = (data.airing) ? data.airing.next_episode-1 : episodes;
