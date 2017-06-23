@@ -673,7 +673,7 @@ const editContentInfo = (db, user_id, content_id, kind, button) => new Promise((
 const userInfo = (db, id) => {
     return db.fetchUser(id).then(data => {
         const notify = (data.notify) ? 'Enabled' : 'Disabled';
-        const time = (data.time) ? moment(data.time).format('LT') : 'None';
+        const time = (data.time) ? moment(data.time).format('LT') : 'Upon episodes releases';
 
         return {
             message: `${line} User ${line}\nNotify: ${notify}\nTime for notifications: ${time}\n`,

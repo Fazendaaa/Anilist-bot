@@ -1,0 +1,71 @@
+{
+    "extension": "linecount",
+    "version": "0.1.7",
+    "workspace": "/home/farm/Documents/Anilist-bot/src",
+    "linecount": [
+        {
+            "version": "0.1.7",
+            "counttime": "2017-06-23 11:04:22",
+            "filesum": 9,
+            "codesum": 2590,
+            "commentsum": 1266,
+            "blanksum": 413,
+            "filelist": [
+                {
+                    "blank": 72,
+                    "code": 790,
+                    "comment": 267,
+                    "filename": "bot.js"
+                },
+                {
+                    "blank": 55,
+                    "code": 337,
+                    "comment": 202,
+                    "filename": "database.js"
+                },
+                {
+                    "blank": 54,
+                    "code": 332,
+                    "comment": 128,
+                    "filename": "keyboard.js"
+                },
+                {
+                    "blank": 29,
+                    "code": 153,
+                    "comment": 40,
+                    "filename": "main.js"
+                },
+                {
+                    "blank": 21,
+                    "code": 176,
+                    "comment": 80,
+                    "filename": "model.js"
+                },
+                {
+                    "blank": 72,
+                    "code": 419,
+                    "comment": 187,
+                    "filename": "reply.js"
+                },
+                {
+                    "blank": 47,
+                    "code": 164,
+                    "comment": 164,
+                    "filename": "search.js"
+                },
+                {
+                    "blank": 22,
+                    "code": 126,
+                    "comment": 38,
+                    "filename": "utils.js"
+                },
+                {
+                    "blank": 41,
+                    "code": 93,
+                    "comment": 160,
+                    "filename": "verify.js"
+                }
+            ]
+        }
+    ]
+}
