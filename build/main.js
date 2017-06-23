@@ -34,6 +34,13 @@ bot.use(_telegraf2.default.log());
 bot.use(_telegraf2.default.memorySession());
 
 /**
+ * Handles grup/supergroup requests
+ */
+bot.telegram.getMe().then(botInfo => {
+    bot.options.username = botInfo.username;
+});
+
+/**
  * Introduction message.
  */
 bot.command('start', ctx => {
@@ -149,9 +156,13 @@ bot.on('location', ctx => {
  * This is the handle @ANILISTbot inline searches.
  */
 bot.on('inline_query', ctx => {
+    const pageLimit = 20;
+    const offset = parseInt(ctx.inlineQuery.offset) || 0;
     const query = (0, _utils.messageToString)(ctx.inlineQuery.query) || '';
 
-    (0, _search.inlineSearch)(query).then(data => ctx.answerInlineQuery(data)).catch(error => {
+    (0, _search.inlineSearch)(query, offset, pageLimit).then(data => {
+        if (data) ctx.answerInlineQuery(data, { next_offset: offset + pageLimit });else ctx.answerInlineQuery([_utils.notFound]);
+    }).catch(error => {
         console.log('[Error] inline_query:', error);
         ctx.answerInlineQuery([_utils.notFound]);
     });

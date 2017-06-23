@@ -25,14 +25,21 @@ const startKeyboard = () => {
  * @returns {Keyboar} Bot keyboard.
  */
 const menuKeyboard = id => {
-    return Extra.markdown().markup(m => m.inlineKeyboard([
-        m.callbackButton('User', `user/${id}`),
+    let keyboard = [];
+
+    keyboard.push([
+        Markup.callbackButton('User', `user/${id}`),
         // Coundown has all because when it's available the user could select between animes or mangas
-        m.callbackButton('Countdown', `countdown/${id}/all`),
-        m.callbackButton('Watchlist', `watchlist/${id}/all`),
-        m.callbackButton('Readlist', `readlist/${id}/all`),
-        m.callbackButton('Guide', `guide/${id}`)
-    ]));
+        Markup.callbackButton('Countdown', `countdown/${id}/all`),
+        Markup.callbackButton('Guide', `guide/${id}`)
+    ]);
+
+    keyboard.push([
+        Markup.callbackButton('Watchlist', `watchlist/${id}/all`),
+        Markup.callbackButton('Readlist', `readlist/${id}/all`)
+    ]);
+
+    return Extra.markdown().markup(m => m.inlineKeyboard(keyboard));
 }
 
 /**

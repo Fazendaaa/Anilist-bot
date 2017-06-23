@@ -96,6 +96,13 @@ const notFound = {
     description: 'Content not found',
     thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/JPG/rectangular_not_found.jpg'
 };
+const loadingGif = {
+    id: '0',
+    type: 'gif',
+    title: 'Searching...',
+    gif_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/GIF/ripple.gif',
+    thumb_url: 'https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/GIF/ripple.gif'
+};
 
 /***********************************************************************************************************************
  *********************************************** OTHER FUNCTIONS *******************************************************
@@ -162,6 +169,7 @@ module.exports = {
     cmdMessage: cmdMessage,
     notFound: notFound,
     notQuery: notQuery,
+    loadingGif: loadingGif,
     notRm: notRm,
     logo_al: logo_al,
     invalid: invalid,

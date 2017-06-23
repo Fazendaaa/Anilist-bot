@@ -363,6 +363,7 @@ const replyNotifyAnimeHeader = data => {
  * @returns {String} Message to be printed.
  */
 const replyNotifyLastEpisodeHeader = data => {
+    const episodes = verifyEpisodes(data.total_episodes);
     const airing = (data.airing) ? data.airing.next_episode-1 : episodes;
     const lastEpisode = verifyLastEpisode(airing, data.total_episodes);
 

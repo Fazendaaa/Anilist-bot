@@ -10,6 +10,7 @@ import {
     welcome,
     help,
     notFound,
+    loadingGif,
     removeCmd,
     messageToString,
     notQuery,
@@ -56,6 +57,13 @@ db.runNotify();
 
 bot.use(Telegraf.log());
 bot.use(Telegraf.memorySession());
+
+/**
+ * Handles grup/supergroup requests
+ */
+bot.telegram.getMe().then(botInfo => {
+  bot.options.username = botInfo.username;
+});
 
 /**
  * Introduction message.
@@ -196,11 +204,16 @@ bot.on('location', ctx => {
  * This is the handle @ANILISTbot inline searches.
  */
 bot.on('inline_query', ctx => {
+    const pageLimit = 20;
+    const offset = parseInt(ctx.inlineQuery.offset) || 0;
     const query = messageToString(ctx.inlineQuery.query) || '';
 
-    inlineSearch(query)
-    .then(data => ctx.answerInlineQuery(data))
-    .catch(error => {
+    inlineSearch(query, offset, pageLimit).then(data => {
+        if(data)
+            ctx.answerInlineQuery(data, {next_offset: offset + pageLimit});
+        else
+            ctx.answerInlineQuery([notFound]);
+    }).catch(error => {
         console.log('[Error] inline_query:', error)
         ctx.answerInlineQuery([notFound]);
     });

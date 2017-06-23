@@ -352,9 +352,11 @@ const inlineSearchAll = search => {
 /**
  * Search it all the matches for the user query.
  * @param {string} query - User input.
+ * @param {Number} offset - Start of array response.
+ * @param {Number} limit - Ends of array response.
  * @returns {Object[]} All of searched data in Telegram inline standards.
  */
-const inlineSearch = query => new Promise((resolve, reject) => {
+const inlineSearch = (query, offset, limit) => new Promise((resolve, reject) => {
   let search;
 
   // User hasn't typed anything yet
@@ -368,11 +370,9 @@ const inlineSearch = query => new Promise((resolve, reject) => {
     else search = inlineSearchAll(query);
   }
 
-  resolve(search.then(data => data.reduce((acc, cur) => acc.concat(cur), []))
-  // Telegram limits the query data up to 20.
-  .then(data => 0 == data.length ? [_utils.notFound] : data.splice(0, 19)).catch(error => {
+  resolve(search.then(data => data.reduce((acc, cur) => acc.concat(cur), [])).then(data => 0 == data.length ? undefined : data.splice(offset, limit)).catch(error => {
     console.log('[Error] inlineSearch:', error);
-    return [_utils.notFound];
+    return undefined;
   }));
 });
 

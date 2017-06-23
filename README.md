@@ -56,6 +56,11 @@ Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy
 * Removed commands: /notifications and /source -- content is available in menu from now on;
 * Remove reply to message in watchlist and readlist -- now user has buttons to do the same.
 
+**V 2.4**
+* Added pagination in inline mode;
+* Handle group/supergroups;
+* Changing user keyboard.
+
 ## TODO
 
 * Integration with wit.ia;
