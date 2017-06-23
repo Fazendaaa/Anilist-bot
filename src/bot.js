@@ -891,26 +891,29 @@ const fetchMore = (db, user, id, kind) => new Promise((resolve, reject) => {
  * @returns {Object[JSON]} Layout to be printed.
  */
 const showCountdown = animes => new Promise((resolve, reject) => {
-    Promise.all(animes.map(element => {
-        return animePage(element.content).then(response => {
-            if(response.airing)
-                return {response, notify: element.notify};
-            else
-                return undefined;
-        });
-    }))
-    // Remove all undefined values -- all not airing animes.
-    .then(data => data.filter(element => element))
-    // Sorts all releasing animes
-    .then(data => data.sort((key_1, key_2) => {
-        return key_1.response.airing.countdown - key_2.response.airing.countdown;
-    }))
-    .then(data => {
-        return data.map((element, index) => {
-            return `${line} ${romanize(index+1)} ${line}\n`.concat(replyCountdown(element.response, element.notify));
-        })
-    }).then(data => `${line} COUNTDOWN ${line}\n`.concat(data.join('\n')))
-    .then(resolve).catch(reject);
+    if(animes && 0 < animes.length)
+        Promise.all(animes.map(element => {
+            return animePage(element.content).then(response => {
+                if(response.airing)
+                    return {response, notify: element.notify};
+                else
+                    return undefined;
+            });
+        }))
+        // Remove all undefined values -- all not airing animes.
+        .then(data => data.filter(element => element))
+        // Sorts all releasing animes
+        .then(data => data.sort((key_1, key_2) => {
+            return key_1.response.airing.countdown - key_2.response.airing.countdown;
+        }))
+        .then(data => {
+            return data.map((element, index) => {
+                return `${line} ${romanize(index+1)} ${line}\n`.concat(replyCountdown(element.response, element.notify));
+            })
+        }).then(data => `${line} COUNTDOWN ${line}\n`.concat(data.join('\n')))
+        .then(resolve).catch(reject);
+    else
+        resolve(`${line} COUNTDOWN ${line}\n*No animes available.*\nAdd some airing animes to your watchlist.`);
 });
 
 /**

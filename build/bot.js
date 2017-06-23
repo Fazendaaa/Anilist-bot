@@ -783,7 +783,7 @@ const fetchMore = (db, user, id, kind) => new Promise((resolve, reject) => {
  * @returns {Object[JSON]} Layout to be printed.
  */
 const showCountdown = animes => new Promise((resolve, reject) => {
-    Promise.all(animes.map(element => {
+    if (animes && 0 < animes.length) Promise.all(animes.map(element => {
         return (0, _search.animePage)(element.content).then(response => {
             if (response.airing) return { response: response, notify: element.notify };else return undefined;
         });
@@ -797,7 +797,7 @@ const showCountdown = animes => new Promise((resolve, reject) => {
         return data.map((element, index) => {
             return `${_utils.line} ${(0, _utils.romanize)(index + 1)} ${_utils.line}\n`.concat((0, _reply.replyCountdown)(element.response, element.notify));
         });
-    }).then(data => `${_utils.line} COUNTDOWN ${_utils.line}\n`.concat(data.join('\n'))).then(resolve).catch(reject);
+    }).then(data => `${_utils.line} COUNTDOWN ${_utils.line}\n`.concat(data.join('\n'))).then(resolve).catch(reject);else resolve(`${_utils.line} COUNTDOWN ${_utils.line}\n*No animes available.*\nAdd some airing animes to your watchlist.`);
 });
 
 /**
