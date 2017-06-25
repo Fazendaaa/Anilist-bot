@@ -65,7 +65,10 @@ Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy
 
 * Integration with wit.ia;
 * Login with your Anilist account;
-* Add language options.
+* "How much time have I spent watching animes?" -- aka: anime calculator;
+* Give option to rate an episode and comment about it;
+* Give option to write a review about an anime/manga;
+* Add language options;
+* Give the user the option to set layout display among title options like: EN, JP and Romanji;
 * 'Like' system;
-* System to give user recomendations;
-* Give the user the option to set layout display among title options like: EN, JP and Romanji.
+* System to give user content recomendations.

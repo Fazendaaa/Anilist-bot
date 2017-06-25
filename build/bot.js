@@ -79,12 +79,12 @@ const notifyUserReleases = (user, content) => {
  * @returns {Void} Just send the message.
  */
 const notificationTime = (db, user, timezone) => {
-    if (timezone) _utils.telegram.sendMessage(user, 'In what hour of the day you want to be notified about episodes releases', (0, _keyboard.timeKeyboard)(user, timezone));
+    if (timezone) _utils.telegram.sendMessage(user, 'In what period of the day you want to be notified about episodes releases', (0, _keyboard.periodKeyboard)(user, timezone));
     // Case user already save his timezone, just want to update time for notifications.
     else db.getUserTime(user).then(response => {
-            if (response) _utils.telegram.sendMessage(user, 'In what hour of the day you want to be notified about episodes releases',
+            if (response) _utils.telegram.sendMessage(user, 'In what period of the day you want to be notified about episodes releases',
             // Why convert it to moment if time is alreay a Date? Because is less info to be sent it.
-            (0, _keyboard.timeKeyboard)(user, (0, _momentTimezone2.default)(response.time).tz(_momentTimezone2.default.tz.guess(response.timezone)).format()));else _utils.telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
+            (0, _keyboard.periodKeyboard)(user, (0, _momentTimezone2.default)(response.time).tz(_momentTimezone2.default.tz.guess(response.timezone)).format()));else _utils.telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
         }).catch(error => {
             console.log('[Error] notificationTime', error);
             return error;
@@ -967,6 +967,11 @@ open chat with ANILISTbot and see the guide in Menu.";
                         throw error;
                     });
                 }).catch(error => console.log('[Error] buttons countdown:', error));
+                resolve(loadingScreen);
+                break;
+            case 'period':
+                _utils.telegram.editMessageText(chat, message, undefined, 'In what hour of the day you want to be notified about \
+episodes releases', (0, _keyboard.timeKeyboard)(user, id, kind));
                 resolve(loadingScreen);
                 break;
             case 'time':

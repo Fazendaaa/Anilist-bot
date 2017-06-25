@@ -56,19 +56,54 @@ const userKeyboard = id => {
 }
 
 /**
- * Sets the time keyboard.
- * @param {Number} id - User id.
+ * Sets the period keyboard.
  * @param {Number} tz - Timezone id.
  * @returns {Keyboar} Bot keyboard.
  */
-const timeKeyboard = (id, tz) => {
+const periodKeyboard = (id, tz) => {
     return Extra.markdown().markup(m => m.inlineKeyboard([
-        m.callbackButton('6h am', `time/${id}/06/${tz}`),
-        m.callbackButton('Noon', `time/${id}/12/${tz}`),
-        m.callbackButton('6h pm', `time/${id}/18/${tz}`),
-        m.callbackButton('Midnight', `time/${id}/00/${tz}`),
+        m.callbackButton('AM', `period/AM/${tz}`),
+        m.callbackButton('PM', `period/PM/${tz}`),
         m.callbackButton('Remove', `time/${id}/remove`)
     ]));
+}
+
+/**
+ * Sets the time keyboard.
+ * @param {Number} id - User id.
+ * @param {String} period - User period.
+ * @param {Number} tz - Timezone id.
+ * @returns {Keyboar} Bot keyboard.
+ */
+const timeKeyboard = (id, period, tz) => {
+    let add = 0;
+    let keyboard = [];
+
+    if('PM' == period)
+        add += 12;
+
+    keyboard.push([
+        Markup.callbackButton('1h', `time/${id}/${1+add}/${tz}`),
+        Markup.callbackButton('2h', `time/${id}/${2+add}/${tz}`),
+        Markup.callbackButton('3h', `time/${id}/${3+add}/${tz}`),
+        Markup.callbackButton('4h', `time/${id}/${4+add}/${tz}`)
+    ]);
+    
+    keyboard.push([
+        Markup.callbackButton('5h', `time/${id}/${5+add}/${tz}`),
+        Markup.callbackButton('6h', `time/${id}/${6+add}/${tz}`),
+        Markup.callbackButton('7h', `time/${id}/${7+add}/${tz}`),
+        Markup.callbackButton('8h', `time/${id}/${8+add}/${tz}`)
+    ]);
+    
+    keyboard.push([
+        Markup.callbackButton('9h', `time/${id}/${9+add}/${tz}`),
+        Markup.callbackButton('10h', `time/${id}/${10+add}/${tz}`),
+        Markup.callbackButton('11h', `time/${id}/${11+add}/${tz}`),
+        Markup.callbackButton('12h', `time/${id}/${12+add}/${tz}`)
+    ]);
+    
+    return Extra.markdown().markup(m => m.inlineKeyboard(keyboard));
 }
 
 /**
@@ -494,6 +529,7 @@ module.exports = {
     startKeyboard,
     menuKeyboard,
     userKeyboard,
+    periodKeyboard,
     timeKeyboard,
     locationKeyboard,
     citiesKeyboard,

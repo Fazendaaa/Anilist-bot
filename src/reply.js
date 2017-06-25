@@ -68,7 +68,7 @@ const replyBrowseAnime = data => {
     const episodes = verifyEpisodes(data.total_episodes);
 
     /*  \u200B is the invisible emoji   */
-    return `[\u200B](${data.image_url_lge})${japanese}${english}${type}${score}${status}${episodes}${popularity}\
+    return `[\u200B](${data.image_url_lge})${english}${japanese}${type}${score}${status}${episodes}${popularity}\
 ${start}${end}`;
 }
 
@@ -90,7 +90,7 @@ const replyBrowseManga = data => {
     const volumes = verifyVolumes(data.total_volumes);
     const chapters = verifyChapters(data.total_chapters);
 
-    return `[\u200B](${data.image_url_lge})${japanese}${english}${type}${score}${status}${volumes}${chapters}\
+    return `[\u200B](${data.image_url_lge})${english}${japanese}${type}${score}${status}${volumes}${chapters}\
 ${popularity}${start}${end}`;
 }
 

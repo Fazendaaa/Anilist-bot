@@ -24,6 +24,7 @@ import {
     menuKeyboard,
     startKeyboard,
     userKeyboard,
+    periodKeyboard,
     timeKeyboard,
     locationKeyboard,
     citiesKeyboard,
@@ -136,15 +137,15 @@ const notifyUserReleases = (user, content) => {
  */
 const notificationTime = (db, user, timezone) => {
     if(timezone)
-        telegram.sendMessage(user, 'In what hour of the day you want to be notified about episodes releases',
-        timeKeyboard(user, timezone));
+        telegram.sendMessage(user, 'In what period of the day you want to be notified about episodes releases',
+        periodKeyboard(user, timezone));
     // Case user already save his timezone, just want to update time for notifications.
     else
         db.getUserTime(user).then(response => {
             if(response)
-                telegram.sendMessage(user, 'In what hour of the day you want to be notified about episodes releases',
+                telegram.sendMessage(user, 'In what period of the day you want to be notified about episodes releases',
                 // Why convert it to moment if time is alreay a Date? Because is less info to be sent it.
-                timeKeyboard(user, moment(response.time).tz(moment.tz.guess(response.timezone)).format()));
+                periodKeyboard(user, moment(response.time).tz(moment.tz.guess(response.timezone)).format()));
             else
                 telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
         }).catch(error => {
@@ -1076,6 +1077,11 @@ open chat with ANILISTbot and see the guide in Menu.";
                     telegram.editMessageText(chat, message, undefined, data, countdownKeyboard(user));
                 }).catch(error => {throw error;});
             }).catch(error => console.log('[Error] buttons countdown:', error));
+            resolve(loadingScreen);
+            break;
+        case 'period':
+            telegram.editMessageText(chat, message, undefined, 'In what hour of the day you want to be notified about \
+episodes releases', timeKeyboard(user, id, kind));
             resolve(loadingScreen);
             break;
         case 'time':
