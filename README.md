@@ -61,6 +61,9 @@ Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy
 * Handle group/supergroups;
 * Changing user keyboard.
 
+**V 2.4.1**
+* Patching time notifications for different timezones.
+
 ## TODO
 
 * Integration with wit.ia;

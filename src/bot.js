@@ -187,18 +187,8 @@ const setTimezone = (db, user, city) => {
  */
 const changeTime = (db, user, {latitude, longitude}) => {
     timezone.data(latitude, longitude, Date.now()/1000, (error, tz) => {
-        if(!error && 'OK' == tz.raw_response.status) {
-            let timezone;
-
-            // In case that user is in a diferent timezone then the server.
-            if(tz.raw_response.timeZoneId != moment.tz.guess())
-                timezone = moment(tz.local_timestamp*1000).tz(moment.tz.guess()).format();
-            // Since user, in this case, is in the same timezone as the server no need to convert anything.
-            else
-                timezone = moment().format();
-
-            notificationTime(db, user, timezone);
-        }
+        if(!error && 'OK' == tz.raw_response.status)
+            notificationTime(db, user, moment(tz.local_timestamp*1000).tz(tz.raw_response.timeZoneId).format());
         else
             telegram.sendMessage(user, 'Function not available at the moment.');
     });
@@ -674,7 +664,7 @@ const editContentInfo = (db, user_id, content_id, kind, button) => new Promise((
 const userInfo = (db, id) => {
     return db.fetchUser(id).then(data => {
         const notify = (data.notify) ? 'Enabled' : 'Disabled';
-        const time = (data.time) ? moment(data.time).format('LT') : 'Upon episodes releases';
+        const time = (data.time) ? moment(data.time).tz(data.timezone).format('LT') : 'Upon episodes releases';
 
         return {
             message: `${line} User ${line}\nNotify: ${notify}\nTime for notifications: ${time}\n`,

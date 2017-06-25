@@ -120,16 +120,7 @@ const changeTime = (db, user, _ref) => {
         longitude = _ref.longitude;
 
     _nodeGoogleTimezone2.default.data(latitude, longitude, Date.now() / 1000, (error, tz) => {
-        if (!error && 'OK' == tz.raw_response.status) {
-            let timezone;
-
-            // In case that user is in a diferent timezone then the server.
-            if (tz.raw_response.timeZoneId != _momentTimezone2.default.tz.guess()) timezone = (0, _momentTimezone2.default)(tz.local_timestamp * 1000).tz(_momentTimezone2.default.tz.guess()).format();
-            // Since user, in this case, is in the same timezone as the server no need to convert anything.
-            else timezone = (0, _momentTimezone2.default)().format();
-
-            notificationTime(db, user, timezone);
-        } else _utils.telegram.sendMessage(user, 'Function not available at the moment.');
+        if (!error && 'OK' == tz.raw_response.status) notificationTime(db, user, (0, _momentTimezone2.default)(tz.local_timestamp * 1000).tz(tz.raw_response.timeZoneId).format());else _utils.telegram.sendMessage(user, 'Function not available at the moment.');
     });
 };
 
@@ -588,7 +579,7 @@ const editContentInfo = (db, user_id, content_id, kind, button) => new Promise((
 const userInfo = (db, id) => {
     return db.fetchUser(id).then(data => {
         const notify = data.notify ? 'Enabled' : 'Disabled';
-        const time = data.time ? (0, _momentTimezone2.default)(data.time).format('LT') : 'Upon episodes releases';
+        const time = data.time ? (0, _momentTimezone2.default)(data.time).tz(data.timezone).format('LT') : 'Upon episodes releases';
 
         return {
             message: `${_utils.line} User ${_utils.line}\nNotify: ${notify}\nTime for notifications: ${time}\n`,
