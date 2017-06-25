@@ -84,7 +84,7 @@ const notificationTime = (db, user, timezone) => {
     else db.getUserTime(user).then(response => {
             if (response) _utils.telegram.sendMessage(user, 'In what period of the day you want to be notified about episodes releases',
             // Why convert it to moment if time is alreay a Date? Because is less info to be sent it.
-            (0, _keyboard.periodKeyboard)(user, (0, _momentTimezone2.default)(response.time).tz(_momentTimezone2.default.tz.guess(response.timezone)).format()));else _utils.telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
+            (0, _keyboard.periodKeyboard)(user, (0, _momentTimezone2.default)(response.time).tz(response.timezone).format()));else _utils.telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
         }).catch(error => {
             console.log('[Error] notificationTime', error);
             return error;

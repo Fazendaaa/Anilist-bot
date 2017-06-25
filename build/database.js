@@ -360,7 +360,7 @@ class DB {
      */
     getUserTime(_id) {
         return _model.User.findOne({ _id: _id }).then(user => {
-            if (user && user.time && user.timezone) return { time: user.time, tz: user.timezone };else return undefined;
+            if (user && user.time && user.timezone) return { time: user.time, timezone: user.timezone };else return undefined;
         }).catch(error => {
             console.log('[Error] DB getUserTime:', error);
             return undefined;

@@ -366,7 +366,7 @@ export default class DB {
     getUserTime(_id) {
         return User.findOne({_id}).then(user => {
             if(user && user.time && user.timezone)
-                return {time: user.time, tz: user.timezone};
+                return {time: user.time, timezone: user.timezone};
             else
                 return undefined;
         }).catch(error => {
