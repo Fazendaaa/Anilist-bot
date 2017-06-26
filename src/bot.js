@@ -145,7 +145,7 @@ const notificationTime = (db, user, timezone) => {
             if(response)
                 telegram.sendMessage(user, 'In what period of the day you want to be notified about episodes releases',
                 // Why convert it to moment if time is alreay a Date? Because is less info to be sent it.
-                periodKeyboard(user, moment(response.time).tz(response.timezone).format()));
+                periodKeyboard(user, response.timezone));
             else
                 telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
         }).catch(error => {
@@ -167,7 +167,7 @@ const setTimezone = (db, user, city) => {
 
     if(0 < results.length) {
         if(1 == results.length)
-            notificationTime(db, user, moment(Date.now()).tz(results[0].timezone).format());
+            notificationTime(db, user, results[0].timezone);
         else
             telegram.sendMessage(user, `I have found more than one city for, *${city}*. From wich province is yours?`,
             citiesKeyboard(user, results));
@@ -188,7 +188,7 @@ const setTimezone = (db, user, city) => {
 const changeTime = (db, user, {latitude, longitude}) => {
     timezone.data(latitude, longitude, Date.now()/1000, (error, tz) => {
         if(!error && 'OK' == tz.raw_response.status)
-            notificationTime(db, user, moment(tz.local_timestamp*1000).tz(tz.raw_response.timeZoneId).format());
+            notificationTime(db, user, tz.raw_response.timeZoneId);
         else
             telegram.sendMessage(user, 'Function not available at the moment.');
     });
@@ -1071,7 +1071,7 @@ open chat with ANILISTbot and see the guide in Menu.";
             break;
         case 'period':
             telegram.editMessageText(chat, message, undefined, 'In what hour of the day you want to be notified about \
-episodes releases', timeKeyboard(user, id, kind));
+episodes releases', timeKeyboard(id, kind.concat(`/${button}`)));
             resolve(loadingScreen);
             break;
         case 'time':
@@ -1093,7 +1093,7 @@ episodes releases', timeKeyboard(user, id, kind));
                         telegram.sendMessage(chat, 'Time for notifications already removed.', startKeyboard(user));
                 }).catch(error => console.log('[Error] buttons time remove:', error));
             else {
-                db.setTime(user, kind, button).then(response => {
+                db.setTime(user, id, kind.concat(`/${button}`)).then(response => {
                     if(response)
                         telegram.sendMessage(chat, 'Time for notifications setted.', startKeyboard(user));
                     else
@@ -1103,7 +1103,7 @@ episodes releases', timeKeyboard(user, id, kind));
             resolve(loadingScreen);
             break;
         case 'timezone':
-            notificationTime(db, user, moment().tz(kind.concat(`/${button}`)).format());
+            notificationTime(db, user, kind.concat(`/${button}`));
             break;
         case 'more':
             fetchMore(db, user, id, kind).then(data => {

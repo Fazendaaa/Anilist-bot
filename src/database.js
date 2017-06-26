@@ -349,8 +349,8 @@ export default class DB {
     setTime(_id, hour, timezone) {
         return User.findOneAndUpdate({_id}, {}, this.options).then(user => {
             // Set time for updates given user timezone.
-            user.timezone = moment.tz.guess(timezone);
-            user.time = setDay(moment(timezone).hours(hour).minutes(0).seconds(0));
+            user.timezone = timezone;
+            user.time = setDay(moment().tz(user.timezone).hours(hour).minutes(0).seconds(0).milliseconds(0));
             return user.save().then(data => true).catch(error => {throw error;});
         }).catch(error => {
             console.log('[Error] DB setTime:', error);

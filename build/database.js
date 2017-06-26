@@ -342,8 +342,8 @@ class DB {
     setTime(_id, hour, timezone) {
         return _model.User.findOneAndUpdate({ _id: _id }, {}, this.options).then(user => {
             // Set time for updates given user timezone.
-            user.timezone = _momentTimezone2.default.tz.guess(timezone);
-            user.time = setDay((0, _momentTimezone2.default)(timezone).hours(hour).minutes(0).seconds(0));
+            user.timezone = timezone;
+            user.time = setDay((0, _momentTimezone2.default)().tz(user.timezone).hours(hour).minutes(0).seconds(0).milliseconds(0));
             return user.save().then(data => true).catch(error => {
                 throw error;
             });

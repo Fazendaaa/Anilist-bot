@@ -70,12 +70,11 @@ const periodKeyboard = (id, tz) => {
 
 /**
  * Sets the time keyboard.
- * @param {Number} id - User id.
  * @param {String} period - User period.
  * @param {Number} tz - Timezone id.
  * @returns {Keyboar} Bot keyboard.
  */
-const timeKeyboard = (id, period, tz) => {
+const timeKeyboard = (period, tz) => {
     let add = 0;
     let keyboard = [];
 
@@ -83,24 +82,24 @@ const timeKeyboard = (id, period, tz) => {
         add += 12;
 
     keyboard.push([
-        Markup.callbackButton('1h', `time/${id}/${1+add}/${tz}`),
-        Markup.callbackButton('2h', `time/${id}/${2+add}/${tz}`),
-        Markup.callbackButton('3h', `time/${id}/${3+add}/${tz}`),
-        Markup.callbackButton('4h', `time/${id}/${4+add}/${tz}`)
+        Markup.callbackButton('1h', `time/${1+add}/${tz}`),
+        Markup.callbackButton('2h', `time/${2+add}/${tz}`),
+        Markup.callbackButton('3h', `time/${3+add}/${tz}`),
+        Markup.callbackButton('4h', `time/${4+add}/${tz}`)
     ]);
     
     keyboard.push([
-        Markup.callbackButton('5h', `time/${id}/${5+add}/${tz}`),
-        Markup.callbackButton('6h', `time/${id}/${6+add}/${tz}`),
-        Markup.callbackButton('7h', `time/${id}/${7+add}/${tz}`),
-        Markup.callbackButton('8h', `time/${id}/${8+add}/${tz}`)
+        Markup.callbackButton('5h', `time/${5+add}/${tz}`),
+        Markup.callbackButton('6h', `time/${6+add}/${tz}`),
+        Markup.callbackButton('7h', `time/${7+add}/${tz}`),
+        Markup.callbackButton('8h', `time/${8+add}/${tz}`)
     ]);
     
     keyboard.push([
-        Markup.callbackButton('9h', `time/${id}/${9+add}/${tz}`),
-        Markup.callbackButton('10h', `time/${id}/${10+add}/${tz}`),
-        Markup.callbackButton('11h', `time/${id}/${11+add}/${tz}`),
-        Markup.callbackButton('12h', `time/${id}/${12+add}/${tz}`)
+        Markup.callbackButton('9h', `time/${9+add}/${tz}`),
+        Markup.callbackButton('10h', `time/${10+add}/${tz}`),
+        Markup.callbackButton('11h', `time/${11+add}/${tz}`),
+        Markup.callbackButton('12h', `time/${12+add}/${tz}`)
     ]);
     
     return Extra.markdown().markup(m => m.inlineKeyboard(keyboard));

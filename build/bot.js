@@ -84,7 +84,7 @@ const notificationTime = (db, user, timezone) => {
     else db.getUserTime(user).then(response => {
             if (response) _utils.telegram.sendMessage(user, 'In what period of the day you want to be notified about episodes releases',
             // Why convert it to moment if time is alreay a Date? Because is less info to be sent it.
-            (0, _keyboard.periodKeyboard)(user, (0, _momentTimezone2.default)(response.time).tz(response.timezone).format()));else _utils.telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
+            (0, _keyboard.periodKeyboard)(user, response.timezone));else _utils.telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', undefined);
         }).catch(error => {
             console.log('[Error] notificationTime', error);
             return error;
@@ -103,7 +103,7 @@ const setTimezone = (db, user, city) => {
     const results = _cityTimezones2.default.lookupViaCity(city.replace(/\b\w/g, l => l.toUpperCase()));
 
     if (0 < results.length) {
-        if (1 == results.length) notificationTime(db, user, (0, _momentTimezone2.default)(Date.now()).tz(results[0].timezone).format());else _utils.telegram.sendMessage(user, `I have found more than one city for, *${city}*. From wich province is yours?`, (0, _keyboard.citiesKeyboard)(user, results));
+        if (1 == results.length) notificationTime(db, user, results[0].timezone);else _utils.telegram.sendMessage(user, `I have found more than one city for, *${city}*. From wich province is yours?`, (0, _keyboard.citiesKeyboard)(user, results));
     } else _utils.telegram.sendMessage(user, 'City not found, please try it again.', (0, _keyboard.locationKeyboard)(user));
 };
 
@@ -120,7 +120,7 @@ const changeTime = (db, user, _ref) => {
         longitude = _ref.longitude;
 
     _nodeGoogleTimezone2.default.data(latitude, longitude, Date.now() / 1000, (error, tz) => {
-        if (!error && 'OK' == tz.raw_response.status) notificationTime(db, user, (0, _momentTimezone2.default)(tz.local_timestamp * 1000).tz(tz.raw_response.timeZoneId).format());else _utils.telegram.sendMessage(user, 'Function not available at the moment.');
+        if (!error && 'OK' == tz.raw_response.status) notificationTime(db, user, tz.raw_response.timeZoneId);else _utils.telegram.sendMessage(user, 'Function not available at the moment.');
     });
 };
 
@@ -962,7 +962,7 @@ open chat with ANILISTbot and see the guide in Menu.";
                 break;
             case 'period':
                 _utils.telegram.editMessageText(chat, message, undefined, 'In what hour of the day you want to be notified about \
-episodes releases', (0, _keyboard.timeKeyboard)(user, id, kind));
+episodes releases', (0, _keyboard.timeKeyboard)(id, kind.concat(`/${button}`)));
                 resolve(loadingScreen);
                 break;
             case 'time':
@@ -973,14 +973,14 @@ episodes releases', (0, _keyboard.timeKeyboard)(user, id, kind));
                 });else if ('remove' == kind) db.removeTime(user).then(removed => {
                     if (removed) _utils.telegram.sendMessage(chat, 'Removed time for notifications.', (0, _keyboard.startKeyboard)(user));else _utils.telegram.sendMessage(chat, 'Time for notifications already removed.', (0, _keyboard.startKeyboard)(user));
                 }).catch(error => console.log('[Error] buttons time remove:', error));else {
-                    db.setTime(user, kind, button).then(response => {
+                    db.setTime(user, id, kind.concat(`/${button}`)).then(response => {
                         if (response) _utils.telegram.sendMessage(chat, 'Time for notifications setted.', (0, _keyboard.startKeyboard)(user));else _utils.telegram.sendMessage(chat, 'Some error occured, please inform @Farmy about that.', (0, _keyboard.startKeyboard)(user));
                     }).catch(error => console.log('[Error] buttons time set:', error));
                 }
                 resolve(loadingScreen);
                 break;
             case 'timezone':
-                notificationTime(db, user, (0, _momentTimezone2.default)().tz(kind.concat(`/${button}`)).format());
+                notificationTime(db, user, kind.concat(`/${button}`));
                 break;
             case 'more':
                 fetchMore(db, user, id, kind).then(data => {
