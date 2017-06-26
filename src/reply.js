@@ -521,8 +521,8 @@ const replyNotifyInTime = data => {
     const japanese = verifyJPTitle(data.title_japanese);
     const english = verifyENTitle(data.title_english, data.id, 'anime');
     const watch = verifyWatchLink(data);
-    const airing = (data.airing) ? data.airing.next_episode-1 : episodes;
     const episode = verifyMD('Episode released', airing);
+    const airing = (data.airing) ? data.airing.next_episode-1 : episode;
     const lastEpisode = verifyLastEpisode(airing, data.total_episodes);
 
     return `${english}${japanese}${lastEpisode}${episode}${watch}`;
