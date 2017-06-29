@@ -1,6 +1,6 @@
 # ANILIST bot
 
-<img src="https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/PNG/circled_logo.png" alt="Anilist-bot logo" align="right" />
+<img src="https://raw.githubusercontent.com/Fazendaaa/Anilist-bot/master/images/PNG/circled_logo.png" alt="Anilist-bot logo" align="right" width="512px" height="512px" />
 
 This is a [Telgram](https://telegram.org) search bot in [Anilist](https://anilist.co) database. This is an UNOFFICIAL bot.
 
@@ -19,7 +19,8 @@ This bot is up and running in [Heroku](https://www.heroku.com/home)
 * [moment](https://momentjs.com) - Convert's time formats;
 * [Humanize Duration](https://github.com/EvanHahn/HumanizeDuration.js) - Set countdown;
 * [Node Google Timezone](https://www.npmjs.com/package/node-google-timezone) - Search for user timezone given his location;
-* [City Timezones](https://www.npmjs.com/package/city-timezones) - Search for user timezone given city name.
+* [City Timezones](https://www.npmjs.com/package/city-timezones) - Search for user timezone given city name;
+* [Telegraf i18n](https://github.com/telegraf/telegraf-i18n/) - Set user's bot language.
 
 ## Contributing
 
@@ -73,5 +74,6 @@ Huge thanks to [Juan Soto](https://github.com/sotojuan) and the awesome and easy
 * Give option to write a review about an anime/manga;
 * Add language options;
 * Give the user the option to set layout display among title options like: EN, JP and Romanji;
+* Integration with mixpanel so that way data about trending anime could be analized;
 * 'Like' system;
 * System to give user content recomendations.

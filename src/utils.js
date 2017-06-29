@@ -21,17 +21,16 @@ const telegram = new Telegram(process.env.BOT_TOKEN, {
 
 const line = '———';
 
-const help = "Wanna find _animes, mangas, characters, staff_ or _studios_? Try it using ANILISTbot in any of your chats, \
-just type in the message field what you want!\n\n\
-Try an exemple:\n\
+const help = "Let's us try an exemple, type the following in *ANY* chat then click in the desired result:\n\n\
 @ANILISTbot Pokemon\n\n\
 This bot has special features for you:\n\
 *- notifications when new episodes releases*\n\
 *- countdown for episodes*\n\
 *- your own watchlist and readlist*\n\n\
-Any questions? Press Menu and see the guide info for more informations.";
+To recive notifications, just add the anime in your watchlist after searching for it, there's a button for that in the searched content.\n\n\
+Any questions? Press Menu and see the guide info for more informations and settings about this bot.";
 
-const welcome = `to the unofficial application for ANILIST.\n\n${help}`;
+const welcome = `to the unofficial application for [Anilist](anilist.co/).\n\n${help}`;
 
 const menu = `${line} MENU ${line}\n\n\
 *User:* _info about all notifications_\n\

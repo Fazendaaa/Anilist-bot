@@ -53,7 +53,8 @@
     "polyfill": "0.1.0",
     "remove-markdown": "0.1.0",
     "striptags": "3.0.1",
-    "telegraf": "3.6.10"
+    "telegraf": "3.6.10",
+    "telegraf-i18n": "5.0.2"
   },
   "devDependencies": {
     "json-loader": "0.5.4"

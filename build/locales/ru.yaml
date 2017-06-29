@@ -1,0 +1,2 @@
+greeting: Привет!
+cart: В вашей корзине ${pluralize(appleCount, 'яблоко', 'яблокa', 'яблок')}

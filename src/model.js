@@ -33,6 +33,11 @@ const Anilist = mongoose.model('Anilist', anilistSchema);
 const userSchema = mongoose.Schema({
     // Mongoose's User id will be the same as Telegram's User id.
     _id: Number,
+    // User's bot language.
+    language: {
+        type: String,
+        default: 'en'
+    },
     // Notifications  is unique for each anime, even if isn't airing beacause this anime could be only in hiatus, coming
     // back later.
     // In this case the notification is for all or none anime.

@@ -1055,7 +1055,7 @@ open chat with ANILISTbot and see the guide in Menu.";
                             break;
                     }
 
-                    resolve({message: `Notification changed to: ${(anime.notify) ? 'Enabled' : 'Disabled' }`,
+                    resolve({message: `Notification changed to: ${(anime.notify) ? 'Enabled' : 'Disabled'}`,
                     visualization: true});
                     telegram.editMessageText(chat, message, undefined, layout, animeKeyboardWatchlist(id, kind));
                 }).catch(error => {throw error;});
