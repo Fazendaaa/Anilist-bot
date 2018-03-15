@@ -56,7 +56,7 @@ const parse = {
 db.runNotify(); 
 
 bot.use(Telegraf.log());
-bot.use(Telegraf.memorySession());
+// bot.use(Telegraf.memorySession());
 
 /**
  * Handles grup/supergroup requests

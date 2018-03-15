@@ -65,7 +65,7 @@ If you want to help me out or just see more about my work:\n\
 Any bugs or suggestions, talk to: @Farmy`;
 
 const notQuery = '*Could not query the data*';
-const notRm = '*Could remove your data. Please, try it later.*';
+const notRm = '*Could not remove your data. Please, try it later.*';
 const defaultResponse = 'Please, feel free to search Anilist.';
 const searchText= 'Search for animes, mangas, characteres, staff and studios.';
 const invalid = '*Invalid anime positon. Please send anime index that you want to remove.*';
