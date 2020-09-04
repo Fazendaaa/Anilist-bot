@@ -45,7 +45,7 @@
     "humanize-duration": "3.12.1",
     "moment": "2.21.0",
     "moment-timezone": "0.5.14",
-    "mongodb": "3.0.4",
+    "mongodb": "3.1.13",
     "mongoose": "5.0.10",
     "nani": "1.2.0",
     "node-google-timezone": "0.1.1",
