@@ -43,7 +43,7 @@
     "dotenv": "5.0.1",
     "google-translate-api": "2.3.0",
     "humanize-duration": "3.12.1",
-    "moment": "2.21.0",
+    "moment": "2.29.4",
     "moment-timezone": "0.5.14",
     "mongodb": "3.0.4",
     "mongoose": "5.0.10",
